@@ -1,0 +1,20 @@
+{
+  "name": "seguimiento-movilidad",
+  "version": "1.0.0",
+  "description": "Un proyecto que revisa distintas cuentas de movilidad en Bogotá y responde a la pregunta sobre dónde se están presentando bloqueos o inconvenientes en la ciudad que afectan la movilidad",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "build": "echo \"Build process not configured yet\""
+  },
+  "keywords": [
+    "seguimiento movilidad",
+    "web"
+  ],
+  "author": "Jho Garcia",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
