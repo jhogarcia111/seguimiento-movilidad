@@ -1,0 +1,146 @@
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--background-secondary);
+}
+
+.dashboard-header {
+  background: var(--background);
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.dashboard-header h1 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+  color: var(--text-secondary);
+}
+
+.dashboard-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.search-section {
+  background: var(--background);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.search-section h2 {
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.search-results {
+  margin-top: 2rem;
+}
+
+.results-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.results-header h3 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.coordinates {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-family: monospace;
+}
+
+.incident-count {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+}
+
+.history-section {
+  /* El componente SearchHistory tiene sus propios estilos */
+}
+
+@media (max-width: 1024px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+    padding: 0 0.5rem;
+    margin: 1rem auto;
+    gap: 1rem;
+  }
+  
+  .history-section {
+    order: -1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .search-section {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-content {
+    padding: 0 0.25rem;
+    margin: 0.5rem auto;
+    gap: 0.75rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem 0.75rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .welcome-text {
+    font-size: 0.875rem;
+  }
+
+  .search-section {
+    padding: 1rem 0.75rem;
+  }
+
+  .search-section h2 {
+    font-size: 1.125rem;
+  }
+}

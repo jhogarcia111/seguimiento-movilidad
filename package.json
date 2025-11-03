@@ -1,6 +1,6 @@
 {
   "name": "seguimiento-movilidad",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Un proyecto que revisa distintas cuentas de movilidad en Bogotá y responde a la pregunta sobre dónde se están presentando bloqueos o inconvenientes en la ciudad que afectan la movilidad",
   "main": "src/index.js",
   "scripts": {
