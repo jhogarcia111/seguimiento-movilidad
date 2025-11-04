@@ -79,6 +79,70 @@ export async function getTweetsBySector(sector, coordinates) {
 }
 
 /**
+ * Obtiene todos los tweets recientes de las cuentas oficiales sin filtrar por sector
+ * @returns {Promise<Array>} Array de tweets
+ */
+export async function getAllRecentTweets() {
+  try {
+    if (!BEARER_TOKEN) {
+      console.warn('⚠️ Twitter Bearer Token no configurado, usando modo mock');
+      return getMockTweets();
+    }
+
+    // Obtener cuentas activas desde BD
+    const accounts = await getTwitterSources();
+    
+    if (accounts.length === 0) {
+      console.warn('⚠️ No hay cuentas Twitter activas en BD, usando mock');
+      return getMockTweets();
+    }
+
+    // Construir query para buscar en todas las cuentas oficiales
+    const accountsQuery = accounts.map(acc => `from:${acc}`).join(' OR ');
+    
+    // Buscar todos los tweets recientes (sin filtro de sector)
+    const query = `(${accountsQuery}) -is:retweet lang:es`;
+    
+    console.log(`🔍 Buscando todos los tweets recientes con query: ${query}`);
+
+    const response = await axios.get(`${TWITTER_API_URL}/tweets/search/recent`, {
+      params: {
+        query: query,
+        max_results: 100, // Más resultados para general
+        'tweet.fields': 'created_at,author_id,public_metrics',
+        expansions: 'author_id'
+      },
+      headers: {
+        'Authorization': `Bearer ${BEARER_TOKEN}`
+      }
+    });
+
+    if (response.data && response.data.data) {
+      console.log(`✅ Encontrados ${response.data.data.length} tweets generales`);
+      return response.data.data.map(tweet => ({
+        id: tweet.id,
+        text: tweet.text,
+        author_id: tweet.author_id,
+        created_at: tweet.created_at,
+        public_metrics: tweet.public_metrics
+      }));
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Error obteniendo tweets generales:', error.response?.data || error.message);
+    
+    // Si hay error de autenticación, usar mock
+    if (error.response?.status === 401) {
+      console.warn('⚠️ Error de autenticación Twitter, usando modo mock');
+      return getMockTweets();
+    }
+    
+    return [];
+  }
+}
+
+/**
  * Tweets mock para desarrollo/testing
  */
 function getMockTweets() {

@@ -176,6 +176,18 @@ async function createTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
 
+    // Tabla de cache general de problemas de movilidad
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS general_mobility_cache (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        incidents_data TEXT NOT NULL COMMENT 'JSON con todos los incidentes',
+        last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME NOT NULL,
+        INDEX idx_expires (expires_at),
+        INDEX idx_last_updated (last_updated)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
     // Crear usuario admin por defecto si no existe
     await createDefaultAdmin();
 

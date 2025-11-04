@@ -1,5 +1,148 @@
 .sector-search-page {
   animation: fadeIn 0.3s ease-in;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.search-split-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .search-split-layout {
+    flex-direction: row;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+}
+
+.search-video-section {
+  width: 100%;
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-height: 300px;
+  max-height: 500px;
+  order: 1;
+}
+
+@media (min-width: 640px) {
+  .search-video-section {
+    min-height: 400px;
+    max-height: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-video-section {
+    width: 50%;
+    min-height: calc(100vh - 200px);
+    max-height: none;
+    order: 1;
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+  }
+}
+
+.search-video {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .search-video {
+    min-height: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-video {
+    min-height: calc(100vh - 200px);
+    height: 100%;
+  }
+}
+
+.search-mute-button {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+@media (min-width: 640px) {
+  .search-mute-button {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-mute-button {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+.search-mute-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.search-mute-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .search-mute-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-mute-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+.search-content-section {
+  width: 100%;
+  flex: 1;
+  order: 2;
+}
+
+@media (min-width: 1024px) {
+  .search-content-section {
+    width: 50%;
+    order: 2;
+  }
 }
 
 .search-container {
@@ -75,8 +218,104 @@
 
 .no-results {
   text-align: center;
-  padding: 3rem 2rem;
+  padding: 2rem;
   color: var(--text-secondary);
+}
+
+.no-results-video-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  background: #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-height: 300px;
+  max-height: 400px;
+}
+
+@media (min-width: 640px) {
+  .no-results-video-container {
+    min-height: 350px;
+    max-height: 450px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .no-results-video-container {
+    min-height: 400px;
+    max-height: 500px;
+  }
+}
+
+.no-results-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.no-results-mute-button {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+@media (min-width: 640px) {
+  .no-results-mute-button {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .no-results-mute-button {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+.no-results-mute-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.no-results-mute-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .no-results-mute-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .no-results-mute-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+.no-results p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .no-results-note {

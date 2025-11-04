@@ -1,15 +1,34 @@
+import { useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import TitoModal from '../components/TitoModal';
+import useTitoModal from '../hooks/useTitoModal';
 import './Layout.css';
 
 function Layout() {
   const location = useLocation();
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const { getRandomMessage, getRandomVideo, getRandomButtonText } = useTitoModal();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleSearchClick = (e) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      setShowSearchModal(true);
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleSearchModalConfirm = () => {
+    setShowSearchModal(false);
+    navigate('/buscar');
   };
 
   return (
@@ -18,7 +37,7 @@ function Layout() {
         <div className="container">
           <Link to="/" className="logo">
             <span className="logo-text">🚦 Seguimiento Movilidad</span>
-            <span className="version">v1.1.0</span>
+            <span className="version">v1.2.0</span>
           </Link>
           <nav className="nav">
             <Link 
@@ -31,6 +50,7 @@ function Layout() {
               <Link 
                 to="/buscar" 
                 className={location.pathname === '/buscar' ? 'active' : ''}
+                onClick={handleSearchClick}
               >
                 Buscar Sector
               </Link>
@@ -91,7 +111,7 @@ function Layout() {
       </footer>
       <div className="bottom-bar">
         <div className="bottom-bar-content">
-          <span>Seguimiento Movilidad - v1.1.0 - Desarrollado por </span>
+          <span>Seguimiento Movilidad - v1.2.0 - Desarrollado por </span>
           <a 
             href="https://github.com/Jhogarcia111" 
             target="_blank" 
@@ -102,6 +122,20 @@ function Layout() {
           </a>
         </div>
       </div>
+
+      {/* Modal de Búsqueda cuando se hace clic en "Buscar Sector" */}
+      {isAuthenticated && (
+        <TitoModal
+          isOpen={showSearchModal}
+          onClose={() => setShowSearchModal(false)}
+          onConfirm={handleSearchModalConfirm}
+          module="searching"
+          videoPath={getRandomVideo('searching')}
+          message={getRandomMessage('searching')}
+          title="Buscando Información 🔍"
+          confirmButtonText={getRandomButtonText('searching')}
+        />
+      )}
     </div>
   );
 }

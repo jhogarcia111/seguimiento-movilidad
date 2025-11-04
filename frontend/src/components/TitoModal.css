@@ -1,0 +1,384 @@
+.tito-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-overlay {
+    padding: 1rem;
+  }
+}
+
+.tito-modal-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 56rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.tito-modal-content {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-content {
+    flex-direction: row;
+  }
+}
+
+.tito-modal-text-section {
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  order: 2;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-text-section {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-text-section {
+    width: 50%;
+    padding: 1.5rem;
+    order: 1;
+  }
+}
+
+.tito-modal-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-header {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.tito-modal-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 1rem;
+  }
+}
+
+.tito-modal-avatar-text {
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-avatar-text {
+    font-size: 1rem;
+  }
+}
+
+.tito-modal-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-title {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-title {
+    font-size: 1.25rem;
+  }
+}
+
+.tito-modal-subtitle {
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
+.tito-modal-message {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-message {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+.tito-modal-message-text {
+  color: #1f2937;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-message-text {
+    font-size: 0.875rem;
+  }
+}
+
+.tito-modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-buttons {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.tito-modal-button {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.tito-modal-button-cancel {
+  border: 1px solid #d1d5db;
+  color: #374151;
+  background: white;
+}
+
+.tito-modal-button-cancel:hover {
+  background: #f9fafb;
+}
+
+.tito-modal-button-confirm {
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  color: white;
+}
+
+.tito-modal-button-confirm:hover {
+  background: linear-gradient(to right, #2563eb, #7e22ce);
+  transform: scale(1.05);
+}
+
+.tito-modal-video-section {
+  width: 100%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 16rem;
+  order: 1;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-video-section {
+    width: 50%;
+    height: auto;
+    order: 2;
+  }
+}
+
+.tito-modal-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tito-modal-mute-button {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-mute-button {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-mute-button {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+.tito-modal-mute-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.tito-modal-mute-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-mute-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-mute-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+.tito-modal-video-controls {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-video-controls {
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+.tito-modal-control-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.25rem;
+}
+
+.tito-modal-control-button:hover {
+  color: #d1d5db;
+}
+
+.tito-modal-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .tito-modal-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.tito-modal-close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.2s;
+  z-index: 10;
+  padding: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-close-button {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+.tito-modal-close-button:hover {
+  color: #4b5563;
+}
+
+.tito-modal-close-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .tito-modal-close-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+

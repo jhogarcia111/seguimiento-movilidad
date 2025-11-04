@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMobilityBySector } from '../services/mobilityService.js';
+import { getMobilityBySector, getGeneralMobilityProblems } from '../services/mobilityService.js';
 
 const router = express.Router();
 
@@ -40,22 +40,28 @@ router.get('/sector', async (req, res) => {
 });
 
 /**
- * GET /api/mobility/all
- * Obtiene todos los problemas de movilidad recientes
+ * GET /api/mobility/general
+ * Obtiene problemas generales de movilidad en Bogotá (sin filtrar por sector)
+ * Se actualiza automáticamente si han pasado más de 30 minutos desde la última actualización
  */
-router.get('/all', async (req, res) => {
+router.get('/general', async (req, res) => {
   try {
-    const { hours = 4 } = req.query;
-    // TODO: Implementar endpoint para obtener todos los incidentes
+    const results = await getGeneralMobilityProblems();
+
     res.json({
       success: true,
-      message: 'Endpoint en desarrollo',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      last_updated: results.last_updated,
+      results: {
+        incidents: results.incidents,
+        source: results.source,
+        count: results.incidents.length
+      }
     });
   } catch (error) {
-    console.error('Error en /all:', error);
+    console.error('Error en /general:', error);
     res.status(500).json({
-      error: error.message || 'Error al consultar movilidad',
+      error: error.message || 'Error al consultar problemas generales de movilidad',
       timestamp: new Date().toISOString()
     });
   }

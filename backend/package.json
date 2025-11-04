@@ -1,6 +1,6 @@
 {
   "name": "seguimiento-movilidad-backend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Backend API para seguimiento de movilidad en Bogotá",
   "main": "server.js",
   "type": "module",

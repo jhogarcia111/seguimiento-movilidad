@@ -50,7 +50,7 @@ function LoginPage() {
     <div className="login-page">
       <div className="login-container">
         <h1>🚦 Seguimiento Movilidad</h1>
-        <div className="version-badge">v1.1.0</div>
+        <div className="version-badge">v1.2.0</div>
         <h2>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</h2>
 
         {error && (

@@ -122,4 +122,27 @@ export async function searchMobilityBySector(sector) {
   }
 }
 
+/**
+ * Obtiene problemas generales de movilidad en Bogotá
+ * @returns {Promise<Object>} Resultados generales con todos los incidentes
+ */
+export async function getGeneralMobilityProblems() {
+  try {
+    const response = await api.get('/api/mobility/general');
+    
+    return {
+      incidents: response.data.results?.incidents || [],
+      source: response.data.results?.source || 'api',
+      count: response.data.results?.count || 0,
+      last_updated: response.data.last_updated
+    };
+  } catch (error) {
+    console.error('Error en getGeneralMobilityProblems:', error);
+    throw new Error(
+      error.response?.data?.error || 
+      'Error al obtener problemas generales de movilidad'
+    );
+  }
+}
+
 export default api;
