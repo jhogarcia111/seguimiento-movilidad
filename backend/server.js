@@ -15,6 +15,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3051;
 
+// Vercel Services: el backend se monta bajo routePrefix (p. ej. /_/backend). Quitar prefijo para rutas /api/...
+const VERCEL_BACKEND_PREFIX = '/_/backend';
+app.use((req, _res, next) => {
+  const u = req.url || '';
+  if (u === VERCEL_BACKEND_PREFIX || u.startsWith(`${VERCEL_BACKEND_PREFIX}/`) || u.startsWith(`${VERCEL_BACKEND_PREFIX}?`)) {
+    const rest = u.slice(VERCEL_BACKEND_PREFIX.length);
+    req.url = rest.length ? rest : '/';
+  }
+  next();
+});
+
 // Configuración de CORS para permitir localhost y URLs públicas de Cursor
 // En desarrollo, permitimos todos los orígenes para facilitar el debugging
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -182,9 +193,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Iniciar servidor - Escuchar en todas las interfaces para permitir acceso desde la red local
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`🌐 Servidor accesible desde la red local en http://0.0.0.0:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-});
+// En Vercel (Functions) no se usa listen; se exporta la app. En local sí.
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`🌐 Servidor accesible desde la red local en http://0.0.0.0:${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  });
+}
+
+export default app;

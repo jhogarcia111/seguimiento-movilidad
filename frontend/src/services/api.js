@@ -15,7 +15,12 @@ function getApiBaseUrl() {
   const currentHost = window.location.hostname;
   const protocol = window.location.protocol;
   const currentPort = window.location.port;
-  
+
+  // Mismo dominio: Vercel Services (vercel.json → backend en /_/backend)
+  if (import.meta.env.PROD && currentHost.endsWith('.vercel.app')) {
+    return `${protocol}//${currentHost}/_/backend`;
+  }
+
   // Si estamos en una URL pública de Cursor
   if (currentHost.includes('devtunnels.ms') || currentHost.includes('tunnels.cursor.com')) {
     // Construir la URL del backend basada en la URL del frontend
