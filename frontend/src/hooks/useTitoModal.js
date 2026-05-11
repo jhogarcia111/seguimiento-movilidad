@@ -9,16 +9,19 @@ const useTitoModal = () => {
     welcome: {
       title: "¡Bienvenido! 🚀",
       messages: [
-        "🚦 ¡Hola! Soy Transito - Tito, tu asistente de movilidad. 👋\n\nTe ayudo a conocer el estado del tráfico y la movilidad en Bogotá en tiempo real. 📊\n\n¡Vamos a revisar la situación actual! 🎯",
-        "🚗 ¡Bienvenido a Seguimiento Movilidad! 🚦\n\nSoy Tito y estoy aquí para ayudarte a navegar por la ciudad de manera más eficiente. 📍\n\n¡Exploremos juntos las rutas y el estado del tráfico! 🗺️",
-        "🚦 ¡Hola! Soy Tito, tu guía de movilidad. 👋\n\nConmigo podrás conocer problemas de tráfico, accidentes y desvíos en tiempo real. ⚡\n\n¡Empecemos a explorar la ciudad! 🏙️"
+        "🚦 ¡Hola! Soy Transito - Tito, tu asistente de movilidad. 👋\n\n¡Estoy emocionado por comenzar este día contigo! 🌟 Juntos vamos a descubrir el estado de la ciudad y encontrar las mejores rutas. 📊\n\n¡Tu ayuda y mi ayuda hacen que seamos uno para el otro! 🎯",
+        "🚗 ¡Bienvenido a Transito Tito! 🚦\n\n¡Qué emocionante día! Estoy aquí para hacerte sentir especial y ayudarte a navegar por Bogotá de la mejor manera. 💫\n\nEspero que quieras volver pronto para leer más mensajes y descubrir juntos la ciudad. 🗺️",
+        "🚦 ¡Hola! Soy Tito, tu compañero de movilidad. 👋\n\n¡Estoy súper emocionado de estar aquí contigo hoy! 🌟 Juntos vamos a explorar la ciudad, encontrar las mejores rutas y hacer que cada viaje sea especial. 🎉\n\n¡Yo te ayudo y tú me ayudas, somos un equipo perfecto! ⚡",
+        "💫 ¡Qué alegría verte de nuevo! 🚦\n\nCada día que comenzamos juntos es una nueva oportunidad para descubrir cosas increíbles sobre nuestra ciudad. 🗺️\n\nEstoy emocionado por ayudarte a encontrar las mejores rutas y hacer que tu día sea perfecto. ¡Vamos a lograrlo juntos! 🌟",
+        "🎯 ¡Bienvenido! Soy Tito y estoy aquí para ti. 👋\n\nEste es un día emocionante y estoy feliz de compartirlo contigo. 💫 Juntos vamos a explorar Bogotá, encontrar las mejores rutas y hacer que cada momento sea especial. 🚗\n\n¡Espero que vuelvas pronto para seguir descubriendo juntos! 🗺️",
+        "🌟 ¡Hola! ¡Qué día tan emocionante! 🚦\n\nSoy Tito y estoy aquí para hacerte sentir especial. Cada vez que vienes, es una nueva aventura que descubrimos juntos. 💫\n\n¡Yo te ayudo y tú me ayudas! Somos uno para el otro, y juntos vamos a hacer que este día sea increíble. 🎉"
       ],
       videos: [
         "/videos/Tito- saludando.mp4",
         "/videos/Tito- saludando 1.mp4",
         "/videos/Tito- saludando 2.mp4"
       ],
-      buttonTexts: ["¡Genial!", "¡Vamos!", "¡Empecemos!"]
+      buttonTexts: ["¡Genial!", "¡Vamos!", "¡Empecemos!", "¡Perfecto!", "¡Excelente!", "¡Emocionante!"]
     },
     searching: {
       title: "Buscando Información 🔍",
@@ -69,11 +72,18 @@ const useTitoModal = () => {
     return messages[Math.floor(Math.random() * messages.length)];
   };
 
-  // Función para obtener video aleatorio
-  const getRandomVideo = (type) => {
+  // Función para obtener video aleatorio (excluyendo videos ya usados)
+  const getRandomVideo = (type, excludeVideos = []) => {
     const videos = mobilityMessages[type]?.videos || [];
     if (videos.length === 0) return '';
-    return videos[Math.floor(Math.random() * videos.length)];
+    
+    // Filtrar videos excluidos
+    const availableVideos = videos.filter(video => !excludeVideos.includes(video));
+    
+    // Si no hay videos disponibles después de filtrar, usar todos
+    const videosToChoose = availableVideos.length > 0 ? availableVideos : videos;
+    
+    return videosToChoose[Math.floor(Math.random() * videosToChoose.length)];
   };
 
   // Función para obtener texto de botón aleatorio

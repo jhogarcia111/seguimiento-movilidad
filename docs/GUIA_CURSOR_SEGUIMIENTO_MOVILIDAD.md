@@ -72,6 +72,7 @@ El proyecto incluye un archivo `restart-server-[NOMBRE_PROYECTO].bat` que te per
 ## 🎭 **Mascota del Proyecto**
 
 **IMPORTANTE**: Cada proyecto debe tener su propia mascota única que represente la esencia del proyecto. Esta mascota es solo para identidad visual y documentación, NO debe ser utilizada en mensajes del agente dentro de Cursor.
+Es requerido que tan pronto termines de leer estas instrucciones y aùn no se ha elegido una mascota por se un proyecto nuevo, entiendas bien de qué trata el proyecto y propongas 3 mascotas con las siguientes guías. (si ya el proeycto está en una fase avanzada nohay necesidad de crear mascota porque ya debería estar generada previamente).
 
 ### **Crear Mascota Única:**
 - **Nombre**: Debe ser único y relacionado con el proyecto
@@ -351,6 +352,125 @@ Esto debería tomar 2-3 minutos. Procedo a leer el archivo actual."
 - 🚫 **Sin validación** - siempre validar datos antes de procesar
 - 🚫 **Sin logs** - incluir logs para debugging
 
+## ✅ **COMANDOS PRE-APROBADOS Y AUTORIZADOS**
+
+### **🎯 IMPORTANTE: Comandos que NO Requieren Aprobación Manual**
+
+Los siguientes comandos y operaciones están **PRE-APROBADOS** y pueden ejecutarse automáticamente sin solicitar confirmación al usuario. El agente de Cursor puede ejecutarlos directamente cuando sean necesarios para completar las tareas solicitadas.
+
+#### **📦 Comandos NPM Pre-aprobados:**
+```bash
+# Instalación de dependencias
+npm install
+npm install <paquete>
+npm install --save-dev <paquete>
+
+# Ejecución de scripts del proyecto
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run lint:fix
+npm run test
+npm run clean
+
+# Gestión de paquetes
+npm update
+npm audit fix
+```
+
+#### **📁 Operaciones de Sistema de Archivos Pre-aprobadas:**
+```bash
+# Crear carpetas y directorios
+mkdir <nombre-carpeta>
+mkdir -p <ruta/completa>
+
+# Copiar archivos
+cp <origen> <destino>
+copy <origen> <destino>  # Windows
+
+# Mover/renombrar archivos
+mv <origen> <destino>
+move <origen> <destino>  # Windows
+
+# Eliminar archivos (solo archivos, NO carpetas completas)
+rm <archivo>
+del <archivo>  # Windows
+
+# Leer/verificar archivos
+cat <archivo>
+type <archivo>  # Windows
+```
+
+#### **🔧 Comandos de Desarrollo Pre-aprobados:**
+```bash
+# TypeScript
+tsc --build
+tsc --watch
+
+# Git (operaciones básicas y seguras)
+git status
+git diff
+git log --oneline
+git branch
+git checkout <rama>
+
+# Verificar procesos y puertos
+netstat -ano | findstr :<puerto>  # Windows
+lsof -i :<puerto>  # Linux/Mac
+```
+
+#### **🗄️ Comandos de Base de Datos Pre-aprobados:**
+```bash
+# MySQL (solo consultas SELECT, no modificaciones)
+mysql -u root -e "SELECT * FROM <tabla>"
+mysql -u root <nombre_bd> -e "SHOW TABLES"
+
+# Verificar conexión
+mysql -u root -e "SELECT 1"
+```
+
+#### **🌐 Comandos de Servidor Pre-aprobados:**
+```bash
+# Verificar que servidores estén corriendo
+curl http://localhost:<puerto>
+curl http://localhost:<puerto>/health
+
+# Reiniciar servidores usando scripts del proyecto
+restart-server-<NOMBRE_PROYECTO>.bat  # Windows
+./restart-server-<NOMBRE_PROYECTO>.sh  # Linux/Mac
+```
+
+### **⚠️ Comandos que SÍ Requieren Aprobación:**
+
+Los siguientes comandos **SÍ requieren aprobación explícita** del usuario antes de ejecutarse:
+
+- ❌ `git push` (cambios a repositorio remoto)
+- ❌ `git commit` (solo si no hay un mensaje claro del usuario)
+- ❌ `npm uninstall` (eliminar paquetes)
+- ❌ `rm -rf` o `rmdir /s` (eliminar carpetas completas)
+- ❌ `DROP TABLE`, `DELETE FROM`, `TRUNCATE` (operaciones destructivas en BD)
+- ❌ Cualquier comando que modifique archivos fuera del proyecto
+- ❌ Instalación de paquetes globales (`npm install -g`)
+- ❌ Cualquier comando con `sudo` o permisos administrativos
+
+### **📋 Reglas para el Agente:**
+
+1. **✅ EJECUTAR AUTOMÁTICAMENTE**: Los comandos listados en "Pre-aprobados" pueden ejecutarse sin preguntar
+2. **❌ PREGUNTAR SIEMPRE**: Los comandos destructivos o que afecten el sistema requieren confirmación
+3. **📝 EXPLICAR**: Si ejecutas un comando pre-aprobado, menciona brevemente qué estás haciendo
+4. **🔄 VERIFICAR**: Después de ejecutar comandos, verifica que funcionaron correctamente
+
+### **💡 Ejemplo de Uso:**
+
+```
+Usuario: "Necesito instalar axios en el proyecto"
+
+Agente: ✅ "Instalando axios con npm install axios..."
+[Ejecuta automáticamente sin preguntar]
+✅ "Axios instalado exitosamente. ¿Necesitas que lo importe en algún archivo específico?"
+```
+
 ## 🔧 **Configuración Inicial**
 
 ### **1. Verificar Conexión al Project Tracker**
@@ -413,8 +533,9 @@ class ProjectTrackerIntegration {
       assignedTo: 'Sistema',
       isError: false,
       isImprovement: true,
-      // ⚠️ REQUERIDO: createdAt debe ser incluido (fecha real de trabajo en formato ISO)
-      createdAt: featureData.createdAt || new Date().toISOString(),
+      // ⚠️ REQUERIDO: requestedAt debe ser incluido (fecha real de trabajo en formato ISO)
+      // createdAt es automático e inmutable, NO debe ser enviado
+      requestedAt: featureData.requestedAt || new Date().toISOString(),
       ...featureData
     };
     
@@ -488,7 +609,7 @@ const projectTracker = new ProjectTrackerIntegration();
 
 ```javascript
 // Script para crear feature automáticamente CON VALIDACIÓN DE TILDES Y FORMATO ESTÁNDAR
-async function createProjectFeature(featureName, description, priority = 'media', createdAt = null) {
+async function createProjectFeature(featureName, description, priority = 'media', requestedAt = null) {
   // Validar tildes en featureName y description
   const hasAccents = /[áéíóúñÁÉÍÓÚÑ]/.test(featureName + description);
   
@@ -506,8 +627,9 @@ async function createProjectFeature(featureName, description, priority = 'media'
     console.warn('📋 Formato requerido: PROBLEMA: | SOLICITUD: | ACTIVIDADES REALIZADAS: | RESULTADO:');
   }
   
-  // ⚠️ REQUERIDO: createdAt (fecha real de trabajo en formato ISO)
-  const createdAtISO = createdAt || new Date().toISOString();
+  // ⚠️ REQUERIDO: requestedAt (fecha real de trabajo en formato ISO)
+  // createdAt es automático e inmutable, NO debe ser enviado
+  const requestedAtISO = requestedAt || new Date().toISOString();
   
   try {
     const result = await projectTracker.createFeature({
@@ -515,7 +637,7 @@ async function createProjectFeature(featureName, description, priority = 'media'
       description,
       priority,
       category: 'Desarrollo',
-      createdAt: createdAtISO // ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO
+      requestedAt: requestedAtISO // ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO (usar requestedAt, createdAt es automático)
     });
     
     console.log(`✅ Feature creada: ${featureName} (ID: ${result.id})`);
@@ -536,13 +658,322 @@ async function reportProgress(featureName, progress, comment = '') {
       throw new Error(`Feature '${featureName}' no encontrada`);
     }
     
-    const newStatus = progress === 100 ? 'completada' : 'en_progreso';
+    const newStatus = progress === 100 ? 'en_pruebas' : 'en_desarrollo';
     await projectTracker.updateFeatureStatus(feature.idFeature, newStatus);
     
     console.log(`📊 Progreso reportado: ${featureName} - ${progress}%`);
   } catch (error) {
     console.error(`❌ Error reportando progreso: ${error.message}`);
   }
+}
+```
+
+## 🚀 **PILOTO AUTOMÁTICO - PROCESAMIENTO DE FEATURES**
+
+### **📋 FLUJO DE ESTADOS CORRECTO**
+
+Los estados válidos en el Project Tracker son:
+- `pendiente` - Estado inicial al crear feature
+- `en_desarrollo` - Cuando se está trabajando en ella (⚠️ **CAMBIAR INMEDIATAMENTE al leer**)
+- `en_pruebas` - Cuando se termina de procesar (piloto automático)
+- `aprobado` - Solo el usuario puede aprobar
+- `en_correccion` - Cuando hay errores o mejoras necesarias
+- `archivado` - Cuando se completa definitivamente
+
+**⚠️ IMPORTANTE:** NO existe el estado "completada". El flujo correcto es:
+```
+pendiente → en_desarrollo → en_pruebas → aprobado → archivado
+    ↓              ↓              ↓
+en_correccion ← en_correccion ← en_correccion
+```
+
+### **🔄 PROCESO AUTOMÁTICO DE FEATURES**
+
+Cuando el usuario te reporte una feature desde el Project Tracker, debes seguir este proceso:
+
+#### **1. Obtener Features Pendientes del Proyecto**
+**⚠️ CRÍTICO:** Solo procesar features del proyecto 51 (Seguimiento Movilidad) que estén en estado `pendiente` o `en_correccion`. NO procesar features de otros proyectos ni features archivadas/aprobadas.
+
+```javascript
+// Obtener features pendientes SOLO del proyecto 51 (Seguimiento Movilidad)
+const response = await fetch('http://localhost:3005/api/project-tracker/features?projectId=51');
+const features = await response.json();
+
+// Filtrar SOLO features pendientes o en corrección del proyecto 51
+const pendingFeatures = features.filter(f => 
+  f.projectId === 51 && // ⚠️ SOLO proyecto 51 (Seguimiento Movilidad)
+  (f.status === 'pendiente' || f.status === 'en_correccion') // ⚠️ SOLO estos estados
+);
+
+// ⚠️ NO procesar features con estos estados:
+// - 'archivado' - Ya completadas
+// - 'aprobado' - Ya aprobadas
+// - 'en_pruebas' - Ya en pruebas
+// - 'en_desarrollo' - Ya están siendo procesadas por otro agente
+```
+
+#### **2. ⚠️ CAMBIAR ESTADO A "en_desarrollo" INMEDIATAMENTE**
+**CRÍTICO:** Tan pronto como empieces a leer/procesar una feature, debes cambiar su estado a `en_desarrollo`. Esto permite que visualmente en el Project Tracker aparezcan las features que están siendo procesadas en este momento.
+
+```javascript
+// Cambiar estado inmediatamente al comenzar
+async function startProcessingFeature(featureId) {
+  const response = await fetch(`http://localhost:3005/api/project-tracker/features/${featureId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'en_desarrollo' })
+  });
+  
+  // Agregar historia del cambio
+  await fetch(`http://localhost:3005/api/project-tracker/features/${featureId}/history`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      changeType: 'status',
+      oldValue: 'pendiente',
+      newValue: 'en_desarrollo',
+      changeReason: 'Inicio de procesamiento automático',
+      comment: 'Feature tomada para procesamiento por piloto automático',
+      changedBy: 'Sistema',
+      commentType: 'system'
+    })
+  });
+}
+```
+
+#### **3. Obtener Detalles Completos de la Feature**
+```javascript
+// Obtener detalles completos (incluyendo imágenes si las hay)
+const featureResponse = await fetch(`http://localhost:3005/api/project-tracker/features/${featureId}`);
+const feature = await featureResponse.json();
+
+// Verificar si tiene imágenes
+if (feature.imageUrls && feature.imageUrls.length > 0) {
+  // Las imágenes están disponibles en feature.imageUrls[]
+  // Puedes acceder a ellas mediante: http://localhost:3005/api/project-tracker/images/{imageUrl}
+  console.log(`Feature tiene ${feature.imageUrls.length} imagen(es)`);
+}
+```
+
+#### **4. Implementar los Cambios Solicitados**
+- Leer la descripción de la feature (formato: PROBLEMA: | SOLICITUD: | ACTIVIDADES REALIZADAS: | RESULTADO:)
+- Revisar imágenes adjuntas si las hay
+- Implementar los cambios necesarios en el código
+- Probar que los cambios funcionan correctamente
+
+#### **5. Documentar Cambios en el Historial**
+Al terminar la implementación, agregar una entrada **MUY DETALLADA** en el historial. La documentación debe ser suficiente para que cualquier persona pueda entender qué se hizo y cómo auditar la feature sin necesidad de revisar código o otras ventanas.
+
+**⚠️ FORMATO OBLIGATORIO PARA HISTORIAS:**
+
+```javascript
+async function addImplementationHistory(featureId, implementationDetails) {
+  const historyEntry = {
+    changeType: 'comment', // Usar 'comment' para documentación detallada
+    changeReason: 'Implementación completada, lista para pruebas',
+    comment: `ACTIVIDADES REALIZADAS:
+
+[Descripción clara y detallada de qué se implementó, paso a paso]
+
+FUNCIONALIDAD IMPLEMENTADA:
+
+1. Ubicación: [Dónde se agregó/modificó el elemento]
+2. Visibilidad/Acceso: [Quién puede ver/usar la funcionalidad]
+3. Navegación/Acción: [Qué sucede al interactuar con el elemento]
+4. Estilos visuales: [Colores, tamaños, animaciones utilizadas]
+5. Responsive: [Comportamiento en móviles si aplica]
+
+CÓMO AUDITAR:
+1. [Paso 1 para verificar la funcionalidad]
+2. [Paso 2 para verificar la funcionalidad]
+3. [Paso 3 para verificar la funcionalidad]
+...
+
+RESULTADO:
+[Descripción del resultado final y beneficio para el usuario]`,
+    imageUrls: implementationDetails.imageUrls || [],
+    changedBy: 'Sistema',
+    commentType: 'system'
+  };
+  
+  await fetch(`http://localhost:3005/api/project-tracker/features/${featureId}/history`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(historyEntry)
+  });
+}
+```
+
+**📋 ELEMENTOS OBLIGATORIOS EN LA DOCUMENTACIÓN:**
+
+1. **ACTIVIDADES REALIZADAS**: Qué se hizo específicamente
+2. **FUNCIONALIDAD IMPLEMENTADA**: 
+   - Ubicación exacta del elemento
+   - Visibilidad/condiciones de acceso
+   - Qué hace al interactuar
+   - Estilos visuales (colores, tamaños, animaciones)
+   - Comportamiento responsive
+3. **CÓMO AUDITAR**: Pasos específicos para verificar que funciona directamente en el frontend, validando el resultado esperado
+4. **RESULTADO**: Beneficio final para el usuario
+
+**💡 EJEMPLO DE BUENA DOCUMENTACIÓN:**
+
+```
+ACTIVIDADES REALIZADAS:
+
+Se agregó un nuevo botón de administración en el menú superior (header) de la página principal (HomePage). El botón se muestra con el texto "🛡️ Admin" y tiene un color marrón distintivo (#8B4513).
+
+FUNCIONALIDAD IMPLEMENTADA:
+
+1. Ubicación: El botón aparece en el header superior de HomePage, específicamente en la sección "header-right", después del botón de configuración (⚙️) y antes del botón de cerrar sesión (🚪).
+
+2. Visibilidad condicional: El botón SOLO es visible para usuarios con role === "admin". Si el usuario no es administrador, el botón no aparece en el menú.
+
+3. Navegación: Al hacer clic en el botón, el usuario es redirigido a la ruta "/admin", que muestra el panel de administración (AdminPage).
+
+4. Estilos visuales:
+   - Color de fondo: #8B4513 (marrón)
+   - Color hover: #A0522D (marrón más claro)
+   - Padding: 0.5rem 1rem
+   - Border-radius: var(--border-radius)
+   - Animación: Escala al hacer hover (scale 1.1)
+
+5. Responsive: En dispositivos móviles, el botón se ajusta con padding reducido.
+
+CÓMO AUDITAR:
+1. Iniciar sesión con un usuario administrador (role: "admin")
+2. Verificar que el botón "🛡️ Admin" aparece en el header superior
+3. Verificar que el botón tiene color marrón (#8B4513)
+4. Hacer clic en el botón y confirmar que redirige a /admin
+5. Cerrar sesión y volver a iniciar con un usuario NO administrador
+6. Confirmar que el botón NO aparece en el menú
+
+RESULTADO:
+Los administradores ahora pueden acceder fácilmente al panel de administración desde el menú principal sin necesidad de escribir la URL manualmente.
+```
+
+#### **6. Cambiar Estado a "en_pruebas"**
+```javascript
+// Cambiar estado final después de implementar
+await fetch(`http://localhost:3005/api/project-tracker/features/${featureId}`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ status: 'en_pruebas' })
+});
+```
+
+#### **7. Procesar Múltiples Features en Secuencia**
+**⚠️ IMPORTANTE:** Cuando el usuario solicite procesar todas las features pendientes, debes procesarlas **una por una** siguiendo el flujo completo para cada una:
+
+```javascript
+async function processAllPendingFeatures() {
+  // 1. Obtener todas las features pendientes
+  const response = await fetch('http://localhost:3005/api/project-tracker/features?projectId=51');
+  const features = await response.json();
+  const pendingFeatures = features.filter(f => 
+    f.projectId === 51 && 
+    (f.status === 'pendiente' || f.status === 'en_correccion')
+  );
+  
+  // 2. Procesar cada feature una por una
+  for (const feature of pendingFeatures) {
+    // Paso 1: Cambiar a en_desarrollo
+    await startProcessingFeature(feature.idFeature);
+    
+    // Paso 2: Obtener detalles completos
+    const featureDetails = await getFeatureDetails(feature.idFeature);
+    
+    // Paso 3: Implementar cambios
+    // ... código de implementación ...
+    
+    // Paso 4: Documentar en historial
+    await addImplementationHistory(feature.idFeature, {
+      activities: '...',
+      functionality: '...', // Ubicación, visibilidad, navegación, estilos, responsive
+      auditSteps: ['...'], // Pasos específicos para verificar en el frontend
+      impact: '...' // Beneficio para el usuario
+    });
+    
+    // Paso 5: Cambiar a en_pruebas
+    await updateFeatureStatus(feature.idFeature, 'en_pruebas');
+    
+    // Continuar con la siguiente feature
+  }
+}
+```
+
+**📋 REGLAS PARA PROCESAMIENTO EN SECUENCIA:**
+
+1. **Procesar una feature a la vez**: No intentar procesar múltiples features simultáneamente
+2. **Completar el flujo completo**: Para cada feature, seguir todos los pasos (1-6) antes de pasar a la siguiente
+3. **Verificar antes de procesar**: Siempre verificar que `feature.projectId === 51` y que el estado es `pendiente` o `en_correccion`
+4. **No saltar pasos**: Cada feature debe pasar por: `pendiente` → `en_desarrollo` → `en_pruebas`
+5. **Documentar cada feature**: Cada feature debe tener su propia historia detallada
+
+### **📋 CHECKLIST DE PROCESAMIENTO**
+
+**⚠️ ANTES DE PROCESAR CUALQUIER FEATURE:**
+
+- [ ] ⚠️ **VERIFICAR que `feature.projectId === 51`** (Seguimiento Movilidad únicamente)
+- [ ] ⚠️ **VERIFICAR que `feature.status === 'pendiente'` o `'en_correccion'`** (NO procesar archivadas, aprobadas, en_pruebas, o en_desarrollo)
+- [ ] ⚠️ **NO procesar features de otros proyectos** - dejarlas intactas
+
+**AL PROCESAR UNA FEATURE:**
+
+- [ ] ⚠️ **Cambiar estado a `en_desarrollo` INMEDIATAMENTE** al comenzar a leerla
+- [ ] Obtener detalles completos de la feature (descripción, imágenes si las hay)
+- [ ] Revisar imágenes adjuntas si están disponibles en `feature.imageUrls`
+- [ ] Implementar los cambios solicitados
+- [ ] Probar que los cambios funcionan
+- [ ] Documentar en el historial con formato completo:
+  - ACTIVIDADES realizadas
+  - FUNCIONALIDAD IMPLEMENTADA (ubicación, visibilidad, navegación, estilos, responsive)
+  - CÓMO AUDITAR (pasos específicos para verificar en el frontend)
+  - RESULTADO (beneficio para el usuario)
+- [ ] Cambiar estado a `en_pruebas` al terminar
+- [ ] Incluir URLs de imágenes en el historial si hay capturas de pantalla
+
+### **🖼️ ACCESO A IMÁGENES**
+
+Las imágenes adjuntas a las features están disponibles en:
+- Campo `imageUrls` de la feature (array de URLs)
+- Endpoint de imágenes: `http://localhost:3005/api/project-tracker/images/{imageUrl}`
+- Puedes incluir estas URLs en el historial al documentar cambios
+
+### **💡 EJEMPLO COMPLETO DE PROCESAMIENTO**
+
+```javascript
+async function processFeature(featureId) {
+  // 1. Cambiar estado inmediatamente
+  await startProcessingFeature(featureId);
+  
+  // 2. Obtener detalles
+  const feature = await getFeatureDetails(featureId);
+  
+  // 3. Revisar imágenes si las hay
+  if (feature.imageUrls && feature.imageUrls.length > 0) {
+    console.log('Imágenes disponibles:', feature.imageUrls);
+    // Procesar imágenes según necesidad
+  }
+  
+  // 4. Implementar cambios
+  // ... código de implementación ...
+  
+  // 5. Documentar en historial
+  await addImplementationHistory(featureId, {
+    activities: 'Implementación de sistema de modales personalizados',
+    functionality: 'Modales ubicados en componentes reutilizables, visibles cuando se muestran, navegación mediante botones de acción, estilos con framer-motion para animaciones',
+    auditSteps: [
+      'Verificar que los modales aparecen cuando se activan',
+      'Confirmar que los botones de acción funcionan correctamente',
+      'Validar que las animaciones se muestran suavemente'
+    ],
+    impact: 'Sistema de modales personalizados funcional, reemplazando alert() y window.confirm()',
+    imageUrls: [] // O incluir URLs de capturas si las hay
+  });
+  
+  // 6. Cambiar estado final
+  await updateFeatureStatus(featureId, 'en_pruebas');
 }
 ```
 
@@ -579,7 +1010,7 @@ function Create-FeatureWithCorrectEncoding {
         [string]$Priority = "media",
         [string]$Category = "Desarrollo",
         [int]$ProjectId = 51,
-        [string]$CreatedAt = $null  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO
+        [string]$RequestedAt = $null  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO (usar requestedAt, createdAt es automático)
     )
     
     # Validar tildes
@@ -589,9 +1020,10 @@ function Create-FeatureWithCorrectEncoding {
         Write-Warning "⚠️ Posible falta de tildes en el nombre de la feature"
     }
     
-    # ⚠️ REQUERIDO: createdAt (fecha real de trabajo en formato ISO)
-    if (-not $CreatedAt) {
-        $CreatedAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"
+    # ⚠️ REQUERIDO: requestedAt (fecha real de trabajo en formato ISO)
+    # createdAt es automático e inmutable, NO debe ser enviado
+    if (-not $RequestedAt) {
+        $RequestedAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"
     }
     
     $body = @{
@@ -603,7 +1035,7 @@ function Create-FeatureWithCorrectEncoding {
         category = $Category
         assignedTo = "Sistema"
         isImprovement = $true
-        createdAt = $CreatedAt  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO
+        requestedAt = $RequestedAt  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO (usar requestedAt, createdAt es automático)
     } | ConvertTo-Json -Depth 3
     
     # ✅ SOLUCIÓN DE ENCODING: Usar archivo temporal con UTF-8
@@ -775,7 +1207,7 @@ foreach ($feature in $features) {
         category = $feature.category
         assignedTo = "Sistema"
         isImprovement = $true
-        createdAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"
+        requestedAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"  # Usar requestedAt, createdAt es automático
     } | ConvertTo-Json -Depth 3
     
     $tempFile = "temp_feature.json"
@@ -802,7 +1234,7 @@ Las features reportadas al sistema deben reflejar la **fecha real de trabajo**, 
 ```javascript
 // ❌ INCORRECTO - Todas las features con fecha de hoy
 {
-  "createdAt": "2025-01-27T20:23:29.000Z" // Fecha de reporte, no de trabajo
+  "requestedAt": "2025-01-27T20:23:29.000Z" // ❌ INCORRECTO: Fecha de reporte, no de trabajo
 }
 ```
 
@@ -810,33 +1242,43 @@ Las features reportadas al sistema deben reflejar la **fecha real de trabajo**, 
 ```javascript
 // ✅ CORRECTO - Fecha real cuando se trabajó
 {
-  "createdAt": "2025-01-24T10:00:00.000Z" // Fecha real de trabajo
+  "requestedAt": "2025-01-24T10:00:00.000Z" // Fecha real de trabajo (editable)
 }
 ```
 
 #### **📋 REGLAS PARA FECHAS DE FEATURES:**
-1. **Fecha de Creación = Fecha Real de Trabajo**
+1. **requestedAt = Fecha Real de Trabajo (Editable)**
+   - Usar el campo `requestedAt` para especificar cuándo realmente se trabajó en la feature
    - NO usar fecha de reporte al sistema
    - Usar fecha cuando realmente se implementó la funcionalidad
    - Considerar el contexto del chat/conversación
 
-2. **Formato de Fecha:**
+2. **createdAt = Fecha Automática del Sistema (Inmutable)**
+   - `createdAt` es automático y NO debe ser enviado en los endpoints
+   - Se establece automáticamente cuando se crea el registro en la base de datos
+   - Es el timestamp de creación del registro, no la fecha de trabajo
+
+3. **Formato de Fecha:**
    - Usar formato ISO: `YYYY-MM-DDTHH:mm:ss.sssZ`
    - Ejemplo: `2025-01-24T14:30:00.000Z`
+   - Solo enviar `requestedAt`, nunca `createdAt`
 
-3. **Estimación de Fechas:**
+4. **Estimación de Fechas:**
    - **Hoy**: Para trabajo realizado en la sesión actual
    - **Ayer**: Para trabajo del día anterior
    - **2-3 días atrás**: Para trabajo de sesiones anteriores
    - **Semana pasada**: Para trabajo de la semana anterior
 
-#### **🔧 SCRIPT PARA ACTUALIZAR FECHAS:**
+#### **🔧 ACTUALIZAR FECHAS DE FEATURES:**
 ```bash
-# Usar el script creado para actualizar fechas
-node scripts/update-feature-dates.js update [featureId] [fechaISO] [razón]
+# Usar el endpoint PUT para actualizar requestedAt
+# El campo createdAt NO puede ser modificado (es inmutable)
 
-# Ejemplo:
-node scripts/update-feature-dates.js update 501 "2025-01-24T10:00:00.000Z" "Trabajado hace 3 días"
+# Ejemplo de actualización:
+PUT /api/project-tracker/features/:featureId
+{
+  "requestedAt": "2025-01-24T10:00:00.000Z"
+}
 ```
 
 #### **📋 CHECKLIST DE FECHAS:**
@@ -861,7 +1303,7 @@ node scripts/update-feature-dates.js update 501 "2025-01-24T10:00:00.000Z" "Trab
   "description": "PROBLEMA: Usuario solicitó indicadores visuales para fechas de push a GitHub. SOLICITUD: Implementar sistema de semáforo con colores para mostrar días desde último push. ACTIVIDADES REALIZADAS: 1) Nueva columna 'Días' separada, 2) Componente GithubDaysStatus con semáforo de colores, 3) Colores: Azul (0-2 días), Amarillo (3-5 días), Rojo (>5 días), 4) Indicador '?' con círculo rojo para sin fecha, 5) Tooltips informativos. RESULTADO: Sistema de semáforo funcional con indicadores visuales claros.",
   "priority": "alta",
   "status": "completada",
-  "createdAt": "2025-01-24T10:00:00.000Z" // ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO
+  "requestedAt": "2025-01-24T10:00:00.000Z" // ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO (usar requestedAt, createdAt es automático e inmutable)
 }
 ```
 
@@ -899,7 +1341,7 @@ node scripts/update-feature-dates.js update 501 "2025-01-24T10:00:00.000Z" "Trab
 - **Feature 505:** Backend API para GitHub Push Dates
 
 #### **🚨 REGLAS CRÍTICAS DE DOCUMENTACIÓN:**
-- **SIEMPRE incluir `createdAt`** en formato ISO (`YYYY-MM-DDTHH:mm:ss.sssZ`) - ⚠️ **REQUERIDO**
+- **SIEMPRE incluir `requestedAt`** en formato ISO (`YYYY-MM-DDTHH:mm:ss.sssZ`) - ⚠️ **REQUERIDO** (createdAt es automático e inmutable)
 - **SIEMPRE usar el formato de 4 secciones** en la descripción
 - **SIEMPRE documentar archivos específicos** con extensiones
 - **SIEMPRE incluir tecnologías utilizadas**
@@ -908,7 +1350,7 @@ node scripts/update-feature-dates.js update 501 "2025-01-24T10:00:00.000Z" "Trab
 - **SIEMPRE crear historias detalladas** para cada cambio de estado
 
 #### **📋 CHECKLIST DE DOCUMENTACIÓN:**
-- [ ] ⚠️ **¿Se incluyó `createdAt` en formato ISO?** (REQUERIDO)
+- [ ] ⚠️ **¿Se incluyó `requestedAt` en formato ISO?** (REQUERIDO - createdAt es automático)
 - [ ] ¿La fecha de creación refleja el día real de trabajo?
 - [ ] ¿La descripción tiene las 4 secciones obligatorias?
 - [ ] ¿Se mencionan archivos específicos con extensiones?
@@ -1084,7 +1526,7 @@ const frontendPort = 4000 + projectId;
 - [ ] Verificar responsive design
 - [ ] Confirmar que no hay errores en consola
 - [ ] Documentar cambios importantes
-- [ ] ⚠️ **Incluir `createdAt` en formato ISO** (REQUERIDO)
+- [ ] ⚠️ **Incluir `requestedAt` en formato ISO** (REQUERIDO - createdAt es automático)
 - [ ] **Validar tildes en features reportadas**
 - [ ] **Verificar encoding UTF-8 en peticiones**
 - [ ] **Validar fechas reales de trabajo en features**
@@ -1110,20 +1552,20 @@ curl http://localhost:3005/api/project-tracker/projects/51
 
 ### **Gestión de Features - CON ENCODING CORRECTO:**
 ```bash
-# Crear feature desde línea de comandos (CON TILDES CORRECTAS Y createdAt REQUERIDO)
-CREATED_AT=$(node -e "console.log(new Date().toISOString())")
+# Crear feature desde línea de comandos (CON TILDES CORRECTAS Y requestedAt REQUERIDO)
+REQUESTED_AT=$(node -e "console.log(new Date().toISOString())")  # Usar requestedAt, createdAt es automático
 curl -X POST http://localhost:3005/api/project-tracker/features \
   -H "Content-Type: application/json; charset=utf-8" \
-  -d "{\"projectId\": 51, \"featureName\": \"Nueva Funcionalidad\", \"description\": \"Implementación de nueva funcionalidad con características específicas\", \"status\": \"pendiente\", \"createdAt\": \"$CREATED_AT\"}"
+  -d "{\"projectId\": 51, \"featureName\": \"Nueva Funcionalidad\", \"description\": \"Implementación de nueva funcionalidad con características específicas\", \"status\": \"pendiente\", \"requestedAt\": \"$REQUESTED_AT\"}"  # Usar requestedAt, createdAt es automático
 
-# ✅ PowerShell CORRECTO - Con solución de encoding UTF-8 y createdAt REQUERIDO
-$createdAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"
+# ✅ PowerShell CORRECTO - Con solución de encoding UTF-8 y requestedAt REQUERIDO
+$requestedAt = (Get-Date).ToUniversalTime().ToString("s") + "Z"  # Usar requestedAt, createdAt es automático
 $body = @{
     projectId = 51
     featureName = "Sistema de Optimización"
     description = "Implementación de sistema de optimización para mejorar rendimiento"
     status = "pendiente"
-    createdAt = $createdAt  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO
+    requestedAt = $requestedAt  # ⚠️ REQUERIDO: Fecha real de trabajo en formato ISO (usar requestedAt, createdAt es automático)
 } | ConvertTo-Json -Depth 3
 
 $body | Out-File -FilePath "temp_feature.json" -Encoding UTF8
@@ -1131,15 +1573,15 @@ Invoke-WebRequest -Uri "http://localhost:3005/api/project-tracker/features" -Met
 Remove-Item "temp_feature.json" -Force
 ```
 
-### ⏰ Zona horaria y fechas de creación (createdAt)
+### ⏰ Zona horaria y fechas de creación (requestedAt)
 
 1) Backend
 - El servidor usa zona por defecto `America/Bogota` (var env `TZ`).
 - Puedes cambiarla exportando `TZ` antes de iniciar el backend.
 
 2) Endpoints soportados
-- `POST /api/project-tracker/features` acepta `createdAt` **REQUERIDO** (ISO-8601). ⚠️ **IMPORTANTE**: El campo `createdAt` es obligatorio. No enviarlo resultará en "No definida" en el frontend.
-- `PUT  /api/project-tracker/features/:featureId/created-date` ajusta la fecha de una feature existente.
+- `POST /api/project-tracker/features` acepta `requestedAt` (ISO-8601) para especificar la fecha real de trabajo. ⚠️ **IMPORTANTE**: `createdAt` es automático e inmutable, NO debe ser enviado. Usar `requestedAt` para la fecha de trabajo.
+- `PUT  /api/project-tracker/features/:featureId` permite actualizar `requestedAt` (createdAt no puede ser modificado).
 
 3) Ejemplos rápidos
 ```bash
@@ -1150,31 +1592,31 @@ curl -X POST http://localhost:3005/api/project-tracker/features \
   -d '{
     "projectId": 51,
     "featureName": "Feature con fecha retroactiva",
-    "description": "Prueba de createdAt",
+    "description": "Prueba de requestedAt",
     "priority": "media",
-    "createdAt": "'"$RETRO"'"
+    "requestedAt": "'"$RETRO"'" // Usar requestedAt, createdAt es automático
   }'
 ```
 
 ```powershell
-# PowerShell: enviar createdAt (-2 días)
-$createdAt = (Get-Date).AddDays(-2).ToString("s") + "Z"
+# PowerShell: enviar requestedAt (-2 días)
+$requestedAt = (Get-Date).AddDays(-2).ToString("s") + "Z"  # Usar requestedAt, createdAt es automático
 $body = @{
   projectId = 51
-  featureName = "Feature con createdAt retroactivo"
+  featureName = "Feature con requestedAt retroactivo"
   description = "Prueba de TZ y fechas"
   priority = "media"
-  createdAt = $createdAt
+  requestedAt = $requestedAt  # Usar requestedAt, createdAt es automático
 } | ConvertTo-Json -Depth 3
-$body | Out-File -FilePath "temp_createdAt.json" -Encoding UTF8
-Invoke-WebRequest -Uri "http://localhost:3005/api/project-tracker/features" -Method POST -Headers @{"Content-Type"="application/json; charset=utf-8"} -InFile "temp_createdAt.json"
-Remove-Item "temp_createdAt.json" -Force
+$body | Out-File -FilePath "temp_requestedAt.json" -Encoding UTF8
+Invoke-WebRequest -Uri "http://localhost:3005/api/project-tracker/features" -Method POST -Headers @{"Content-Type"="application/json; charset=utf-8"} -InFile "temp_requestedAt.json"
+Remove-Item "temp_requestedAt.json" -Force
 ```
 
 4) Requisitos y Recomendaciones
-- **REQUERIDO**: Enviar `createdAt` siempre en formato ISO (`YYYY-MM-DDTHH:mm:ss.sssZ`).
-- ⚠️ **IMPORTANTE**: Si no envías `createdAt`, la feature quedará con fecha "No definida" en el frontend.
-- Para corregir fechas históricas de features existentes, usa `PUT /features/:id/created-date`.
+- **REQUERIDO**: Enviar `requestedAt` siempre en formato ISO (`YYYY-MM-DDTHH:mm:ss.sssZ`) para especificar la fecha real de trabajo.
+- ⚠️ **IMPORTANTE**: `createdAt` es automático e inmutable, NO debe ser enviado. El sistema lo establece automáticamente.
+- Para corregir fechas históricas de features existentes, usa `PUT /features/:id` con `requestedAt`.
 - **Fecha = Fecha Real de Trabajo**: Usar la fecha cuando realmente se implementó la funcionalidad, no la fecha de reporte al sistema.
 
 ## 📞 **SOPORTE**

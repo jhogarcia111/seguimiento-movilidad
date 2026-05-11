@@ -29,3 +29,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Estilos para datos mock */
+.incident-list.mock-data,
+.incident-group.mock-data {
+  position: relative;
+}
+
+.incident-group.mock-data {
+  background-color: #fff9e6; /* Fondo muy claro amarillo */
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed #ffc107; /* Borde punteado amarillo */
+}

@@ -47,6 +47,29 @@
   font-size: 0.875rem;
   line-height: 1.6;
   margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+}
+
+/* Scrollbar personalizado para descripción */
+.incident-description::-webkit-scrollbar {
+  width: 6px;
+}
+
+.incident-description::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+  border-radius: 3px;
+}
+
+.incident-description::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.incident-description::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 .incident-location {
@@ -80,4 +103,27 @@
 .incident-link:hover {
   color: #1557b0;
   text-decoration: underline;
+}
+
+/* Estilos para datos mock */
+.incident-card.mock-data {
+  background-color: #fff3cd; /* Amarillo claro */
+  border: 2px solid #ffc107; /* Borde amarillo */
+  opacity: 0.95;
+}
+
+.incident-card.mock-data:hover {
+  background-color: #ffeaa7; /* Amarillo más claro al hover */
+  border-color: #f39c12; /* Borde naranja al hover */
+}
+
+/* Badge de datos de prueba en la tarjeta */
+.incident-card .mock-badge {
+  display: inline-block;
+  background-color: #ffc107; /* Amarillo */
+  color: #856404; /* Texto oscuro para contraste */
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }

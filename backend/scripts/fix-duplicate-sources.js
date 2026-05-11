@@ -9,10 +9,10 @@ async function fixDuplicates() {
 
     // Obtener duplicados
     const [duplicates] = await pool.execute(`
-      SELECT identifier, COUNT(*) as count, GROUP_CONCAT(id ORDER BY id) as ids
+      SELECT identifier, COUNT(*)::int as count, string_agg(id::text, ',' ORDER BY id) as ids
       FROM sources
       GROUP BY identifier
-      HAVING count > 1
+      HAVING COUNT(*) > 1
     `);
 
     if (duplicates.length === 0) {
@@ -64,10 +64,10 @@ async function fixDuplicates() {
 
     // Verificar que no quedan duplicados
     const [remaining] = await pool.execute(`
-      SELECT identifier, COUNT(*) as count
+      SELECT identifier, COUNT(*)::int as count
       FROM sources
       GROUP BY identifier
-      HAVING count > 1
+      HAVING COUNT(*) > 1
     `);
 
     if (remaining.length === 0) {

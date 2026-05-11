@@ -8,8 +8,9 @@ async function testEndpoint() {
     // Simular exactamente el query del endpoint
     const [sources] = await pool.execute(`
       SELECT s.*, 
-             GROUP_CONCAT(
-               CONCAT(t.id, ':', t.name, ':', t.color) 
+             string_agg(
+               concat(t.id::text, ':', t.name, ':', t.color),
+               ','
                ORDER BY t.name
              ) as tags
       FROM sources s

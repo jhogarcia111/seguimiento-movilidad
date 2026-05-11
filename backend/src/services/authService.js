@@ -12,16 +12,16 @@ export async function authenticateUser(usernameOrEmail, password) {
   try {
     const pool = getDatabase();
     
-    // Buscar usuario por username o email
+    // Buscar usuario por username o email (ahora permitimos usuarios pending también)
     const [users] = await pool.execute(
-      `SELECT id, username, email, password_hash, role, is_active 
+      `SELECT id, username, email, password_hash, role, is_active, approval_status 
        FROM users 
-       WHERE (username = ? OR email = ?) AND is_active = TRUE`,
+       WHERE username = ? OR email = ?`,
       [usernameOrEmail, usernameOrEmail]
     );
 
     if (users.length === 0) {
-      throw new Error('Usuario no encontrado o inactivo');
+      throw new Error('Usuario no encontrado');
     }
 
     const user = users[0];
@@ -33,7 +33,30 @@ export async function authenticateUser(usernameOrEmail, password) {
       throw new Error('Contraseña incorrecta');
     }
 
-    // Generar token JWT
+    // LOS ADMINS SIEMPRE PUEDEN HACER LOGIN (no requieren aprobación)
+    const isAdmin = user.role === 'admin';
+    
+    // Si el usuario está inactivo, no permitir login (excepto admins)
+    if (!isAdmin && (!user.is_active || user.approval_status === 'inactive')) {
+      throw new Error('Usuario inactivo');
+    }
+
+    // Si el usuario está pendiente de aprobación (pero no es admin), retornar información especial
+    if (!isAdmin && user.approval_status === 'pending') {
+      return {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          approval_status: user.approval_status
+        },
+        token: null, // No dar token si está pendiente
+        pending: true
+      };
+    }
+
+    // Generar token JWT solo para usuarios activos
     const token = jwt.sign(
       {
         id: user.id,
@@ -51,7 +74,8 @@ export async function authenticateUser(usernameOrEmail, password) {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        approval_status: user.approval_status
       },
       token
     };
@@ -92,18 +116,22 @@ export async function createUser(userData) {
     // Hash de contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Insertar usuario
+    // Los admins siempre tienen approval_status = 'active', los usuarios normales quedan en 'pending'
+    const approvalStatus = role === 'admin' ? 'active' : 'pending';
+
+    // Insertar usuario con approval_status según el rol
     const [result] = await pool.execute(
-      `INSERT INTO users (username, email, password_hash, role, is_active)
-       VALUES (?, ?, ?, ?, ?)`,
-      [username, email, passwordHash, role, true]
+      `INSERT INTO users (username, email, password_hash, role, is_active, approval_status)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [username, email, passwordHash, role, true, approvalStatus]
     );
 
     return {
       id: result.insertId,
       username,
       email,
-      role
+      role,
+      approval_status: approvalStatus
     };
   } catch (error) {
     throw error;
@@ -117,7 +145,7 @@ export async function getUserById(userId) {
   try {
     const pool = getDatabase();
     const [users] = await pool.execute(
-      `SELECT id, username, email, role, is_active, created_at, updated_at
+      `SELECT id, username, email, role, is_active, approval_status, created_at, updated_at
        FROM users WHERE id = ?`,
       [userId]
     );

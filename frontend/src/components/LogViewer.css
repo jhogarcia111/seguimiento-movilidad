@@ -1,0 +1,319 @@
+/* Botón para abrir el visor de logs */
+.log-viewer-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+.log-viewer-toggle:hover {
+  background: #1557b0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Contenedor del visor de logs */
+.log-viewer-container {
+  position: fixed;
+  z-index: 9999;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+  user-select: none;
+}
+
+.log-viewer-container.dragging {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  cursor: grabbing !important;
+}
+
+.log-viewer-container.resizing {
+  transition: none;
+}
+
+.log-viewer-container.maximized {
+  border-radius: 0;
+}
+
+.log-viewer-container.minimized {
+  height: 48px !important;
+}
+
+/* Header del visor */
+.log-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.log-viewer-header:active {
+  cursor: grabbing;
+}
+
+.log-viewer-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.log-viewer-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+.log-viewer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.log-viewer-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.log-viewer-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Contenido del visor */
+.log-viewer-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.log-viewer-loading,
+.log-viewer-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Líneas de log */
+.log-viewer-logs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.log-viewer-line {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+  word-break: break-word;
+}
+
+.log-viewer-line:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.log-timestamp {
+  color: #858585;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  min-width: 70px;
+}
+
+.log-content {
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+/* Colores por nivel de log */
+.log-viewer-line.log-error {
+  background: rgba(244, 67, 54, 0.1);
+  border-left: 2px solid #f44336;
+}
+
+.log-viewer-line.log-error .log-content {
+  color: #f44336;
+}
+
+.log-viewer-line.log-warn {
+  background: rgba(255, 152, 0, 0.1);
+  border-left: 2px solid #ff9800;
+}
+
+.log-viewer-line.log-warn .log-content {
+  color: #ff9800;
+}
+
+.log-viewer-line.log-success {
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 2px solid #4caf50;
+}
+
+.log-viewer-line.log-success .log-content {
+  color: #4caf50;
+}
+
+.log-viewer-line.log-info {
+  background: rgba(33, 150, 243, 0.1);
+  border-left: 2px solid #2196f3;
+}
+
+.log-viewer-line.log-info .log-content {
+  color: #2196f3;
+}
+
+.log-viewer-line.log-default .log-content {
+  color: #d4d4d4;
+}
+
+/* Scrollbar personalizado */
+.log-viewer-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-viewer-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.log-viewer-content::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 4px;
+}
+
+.log-viewer-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Resize handles */
+.resize-handle {
+  position: absolute;
+  background: transparent;
+  z-index: 10;
+}
+
+.resize-handle-top,
+.resize-handle-bottom {
+  left: 8px;
+  right: 8px;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.resize-handle-top {
+  top: 0;
+}
+
+.resize-handle-bottom {
+  bottom: 0;
+}
+
+.resize-handle-left,
+.resize-handle-right {
+  top: 8px;
+  bottom: 8px;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.resize-handle-left {
+  left: 0;
+}
+
+.resize-handle-right {
+  right: 0;
+}
+
+.resize-handle-top-left {
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+
+.resize-handle-top-right {
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+
+.resize-handle-bottom-left {
+  bottom: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+
+.resize-handle-bottom-right {
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+
+.resize-handle:hover {
+  background: rgba(33, 150, 243, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .log-viewer-container {
+    width: calc(100vw - 1rem) !important;
+    height: 400px !important;
+    left: 0.5rem !important;
+    top: 0.5rem !important;
+  }
+  
+  .log-viewer-content {
+    font-size: 0.7rem;
+  }
+  
+  .log-timestamp {
+    min-width: 60px;
+    font-size: 0.65rem;
+  }
+}
+

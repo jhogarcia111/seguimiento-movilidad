@@ -1,7 +1,7 @@
 import IncidentCard from './IncidentCard';
 import './IncidentList.css';
 
-function IncidentList({ incidents }) {
+function IncidentList({ incidents, isMock = false }) {
   if (!incidents || incidents.length === 0) {
     return null;
   }
@@ -15,15 +15,15 @@ function IncidentList({ incidents }) {
   }, {});
 
   return (
-    <div className="incident-list">
+    <div className={`incident-list ${isMock ? 'mock-data' : ''}`}>
       {Object.entries(grouped).map(([type, typeIncidents]) => (
-        <div key={type} className="incident-group">
+        <div key={type} className={`incident-group ${isMock ? 'mock-data' : ''}`}>
           <h3 className="group-title">
             {getTypeIcon(type)} {getTypeLabel(type)} ({typeIncidents.length})
           </h3>
           <div className="incidents-grid">
             {typeIncidents.map((incident) => (
-              <IncidentCard key={incident.id} incident={incident} />
+              <IncidentCard key={incident.id} incident={incident} isMock={isMock} />
             ))}
           </div>
         </div>

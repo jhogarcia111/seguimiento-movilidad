@@ -9,7 +9,7 @@ async function cleanAllDuplicates() {
 
     // Obtener todos los identifiers con sus IDs
     const [allSources] = await pool.execute(`
-      SELECT identifier, COUNT(*) as count, GROUP_CONCAT(id ORDER BY id) as ids
+      SELECT identifier, COUNT(*)::int as count, string_agg(id::text, ',' ORDER BY id) as ids
       FROM sources
       GROUP BY identifier
       ORDER BY identifier
@@ -24,7 +24,7 @@ async function cleanAllDuplicates() {
       const ids = source.ids.split(',').map(id => parseInt(id));
       console.log(`${source.identifier}: ${source.count} copia(s) - IDs: ${source.ids}`);
       
-      if (source.count > 1) {
+      if (Number(source.count) > 1) {
         const keepId = ids[0]; // Mantener el ID más antiguo
         const deleteIds = ids.slice(1);
         duplicatesToFix.push({ identifier: source.identifier, keepId, deleteIds });
@@ -55,8 +55,9 @@ async function cleanAllDuplicates() {
 
         for (const tagRow of tagsToMove) {
           await pool.execute(`
-            INSERT IGNORE INTO source_tags (source_id, tag_id)
+            INSERT INTO source_tags (source_id, tag_id)
             VALUES (?, ?)
+            ON CONFLICT (source_id, tag_id) DO NOTHING
           `, [dup.keepId, tagRow.tag_id]);
         }
 
@@ -73,14 +74,14 @@ async function cleanAllDuplicates() {
     // Verificación final
     const [finalCount] = await pool.execute('SELECT COUNT(*) as total FROM sources');
     const [remainingDups] = await pool.execute(`
-      SELECT identifier, COUNT(*) as count
+      SELECT identifier, COUNT(*)::int as count
       FROM sources
       GROUP BY identifier
-      HAVING count > 1
+      HAVING COUNT(*) > 1
     `);
 
     console.log('✅ Limpieza completada');
-    console.log(`📊 Total de fuentes después de limpieza: ${finalCount[0].total}`);
+    console.log(`📊 Total de fuentes después de limpieza: ${Number(finalCount[0].total)}`);
     
     if (remainingDups.length === 0) {
       console.log('✅ Verificación: No quedan duplicados');

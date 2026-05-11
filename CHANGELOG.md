@@ -5,6 +5,32 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-03
+
+### Agregado
+- Sistema de prevención de repetición de videos: el video del hero y el del modal siempre son diferentes
+- 6 nuevos mensajes de bienvenida más personales y emocionantes que reflejan la personalidad de Tito
+- Mensajes que hablan de emociones, hacer sentir especial al usuario, descubrir juntos, y ayuda mutua
+- Resaltado verde claro con border-radius de 25px para el mensaje de "no hay problemas de movilidad"
+
+### Cambiado
+- **Cambio de nombre del proyecto**: De "Seguimiento Movilidad" a "Transito Tito" con subtítulo "Seguimiento a la movilidad"
+- El subtítulo "Seguimiento a la movilidad" ahora aparece a la derecha del título en el header (reduciendo la altura del header)
+- Título del hero section revertido a "🚦 Seguimiento de Movilidad en Bogotá" con subtítulo descriptivo
+- Mejora en la distribución de la sección "no hay problemas": título y subtítulo ahora están en la columna izquierda
+- Corrección del color del texto del botón "Iniciar Sesión" a blanco con padding ajustado
+- Sistema de mensajes de bienvenida ahora incluye más variedad (6 mensajes diferentes)
+
+### Corregido
+- Error de referencia: `data` ahora se declara antes de ser usado en los `useEffect`
+- Pausa automática de videos de fondo cuando hay un modal activo (hero y no-results)
+- Videos del hero y del modal ahora garantizan ser diferentes para evitar repetición
+
+### Mejorado
+- Layout del header más compacto con subtítulo horizontal
+- Experiencia de usuario mejorada con mensajes más personales y emocionantes de Tito
+- Mejor distribución visual en la sección de "no hay problemas" con dos columnas bien equilibradas
+
 ## [1.2.0] - 2025-11-03
 
 ### Agregado

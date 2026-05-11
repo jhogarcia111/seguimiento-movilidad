@@ -17,6 +17,24 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
+  // Registrar app_open cuando el usuario carga la aplicación
+  useEffect(() => {
+    if (user && token) {
+      // Registrar actividad de apertura de app
+      const registerAppOpen = async () => {
+        try {
+          await api.post('/api/auth/app-open', {}, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (error) {
+          // No fallar si falla el registro de actividad
+          console.error('Error registrando actividad de app_open:', error);
+        }
+      };
+      registerAppOpen();
+    }
+  }, [user, token]);
+
   const loadUser = async () => {
     try {
       const response = await api.get('/api/auth/me', {
@@ -38,11 +56,23 @@ export function AuthProvider({ children }) {
         password
       });
 
-      const { user: userData, token: newToken } = response.data;
+      const { user: userData, token: newToken, pending } = response.data;
       
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      setUser(userData);
+      // Si el usuario está pendiente, no guardar token pero retornar información
+      if (pending || userData?.approval_status === 'pending') {
+        return { 
+          success: true, 
+          user: userData, 
+          pending: true 
+        };
+      }
+      
+      // Usuario activo, guardar token
+      if (newToken) {
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        setUser(userData);
+      }
       
       return { success: true, user: userData };
     } catch (error) {
@@ -70,7 +100,19 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Registrar actividad de logout antes de limpiar el usuario
+    if (user && token) {
+      try {
+        await api.post('/api/auth/logout', {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (error) {
+        // No fallar el logout si falla el registro de actividad
+        console.error('Error registrando actividad de logout:', error);
+      }
+    }
+    
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);

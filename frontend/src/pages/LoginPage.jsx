@@ -27,15 +27,31 @@ function LoginPage() {
       } else {
         result = await register(username, email, password);
         if (result.success) {
-          // Después de registrar, hacer login automático
-          result = await login(username, password);
+          // Después de registrar, marcar que el usuario está pendiente
+          localStorage.setItem('wasPending', 'true');
+          // Después de registrar, mostrar mensaje y redirigir a aprobación pendiente
+          // Los nuevos usuarios quedan en estado pending
+          navigate('/pending-approval');
+          return;
         }
       }
 
       if (result.success) {
-        // Redirigir según rol
-        const redirectPath = result.user?.role === 'admin' ? '/admin' : '/dashboard';
-        navigate(redirectPath);
+        // Si el usuario está pendiente de aprobación, redirigir a página de aprobación
+        if (result.pending || result.user?.approval_status === 'pending') {
+          navigate('/pending-approval');
+        } else {
+          // Si el usuario acaba de ser activado (estaba pendiente antes), mostrar página de activación
+          const wasPending = localStorage.getItem('wasPending') === 'true';
+          if (wasPending && result.user?.approval_status === 'active') {
+            localStorage.removeItem('wasPending');
+            navigate('/account-activated');
+            return;
+          }
+          // Redirigir según rol
+          const redirectPath = result.user?.role === 'admin' ? '/admin' : '/';
+          navigate(redirectPath);
+        }
       } else {
         setError(result.error);
       }
@@ -49,8 +65,9 @@ function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-container">
-        <h1>🚦 Seguimiento Movilidad</h1>
-        <div className="version-badge">v1.2.0</div>
+        <h1>🚦 Transito Tito</h1>
+        <p className="subtitle">Seguimiento a la movilidad</p>
+        <div className="version-badge">v1.3.0</div>
         <h2>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</h2>
 
         {error && (
@@ -102,19 +119,21 @@ function LoginPage() {
         </form>
 
         <div className="switch-mode">
-          <p>
-            {isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '}
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-              }}
-              className="link-button"
-            >
-              {isLogin ? 'Registrarse' : 'Iniciar Sesión'}
-            </button>
-          </p>
+          <div className="switch-mode-container">
+            <p>
+              {isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError('');
+                }}
+                className="link-button"
+              >
+                {isLogin ? 'Registrarse' : 'Iniciar Sesión'}
+              </button>
+            </p>
+          </div>
         </div>
 
       </div>

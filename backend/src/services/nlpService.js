@@ -112,22 +112,44 @@ function getKnownLocations() {
  * @returns {string} Tipo de incidente
  */
 export function classifyIncident(text) {
+  if (!text || typeof text !== 'string') return 'otro';
+  
   const lowerText = text.toLowerCase();
   
-  if (lowerText.match(/(?:manifestaci[óo]n|protesta|marcha|bloqueo)/)) {
+  // Verificar que el texto realmente mencione el tipo de incidente en contexto
+  // No solo buscar la palabra, sino verificar que esté en un contexto relevante
+  
+  // Manifestación: debe mencionar manifestación/protesta/marcha Y ubicación/movilidad
+  if (lowerText.match(/(?:manifestaci[óo]n|protesta|marcha|bloqueo)/) && 
+      (lowerText.match(/(?:en|calle|avenida|carrera|vía|movilidad|tráfico|transmilenio)/) || 
+       lowerText.length < 200)) { // Si es texto corto, probablemente es un título/header
     return 'manifestación';
   }
   
-  if (lowerText.match(/(?:accidente|choque|colisi[óo]n|atropello)/)) {
+  // Accidente: debe mencionar accidente/choque Y vehículo/tráfico
+  if (lowerText.match(/(?:accidente|choque|colisi[óo]n|atropello|siniestro)/) &&
+      lowerText.match(/(?:vehículo|auto|carro|moto|tráfico|vía|calle|avenida)/)) {
     return 'accidente';
   }
   
-  if (lowerText.match(/(?:obra|cierre|rehabilitaci[óo]n|mantenimiento)/)) {
+  // Obra: debe mencionar obra/mantenimiento Y vía/calle
+  // EXCLUIR: convocatorias, arrendamientos, programas sociales, contrataciones
+  if (lowerText.match(/(?:obra|rehabilitaci[óo]n|mantenimiento|construcci[óo]n)/) &&
+      lowerText.match(/(?:vía|calle|avenida|carrera|carretera)/) &&
+      !lowerText.match(/(?:convocatoria|arrendar|lote|subasta|secop|contrataci[óo]n|apoyos monetarios|ingreso mínimo|monitor social|así vamos)/i)) {
     return 'obra';
   }
   
-  if (lowerText.match(/(?:desv[ií]o|cancelaci[óo]n|suspensi[óo]n)/)) {
+  // Desvío: debe mencionar desvío/suspensión Y ruta/transmilenio
+  if (lowerText.match(/(?:desv[ií]o|cancelaci[óo]n|suspensi[óo]n)/) &&
+      lowerText.match(/(?:ruta|transmilenio|bus|estaci[óo]n|servicio)/)) {
     return 'desvío';
+  }
+  
+  // Cierre: debe mencionar cierre Y vía/calle
+  if (lowerText.match(/(?:cierre|cerrado|bloqueado)/) &&
+      lowerText.match(/(?:vía|calle|avenida|carrera|carretera)/)) {
+    return 'obra'; // Los cierres suelen ser por obras
   }
   
   return 'otro';

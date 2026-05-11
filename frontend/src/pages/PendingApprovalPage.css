@@ -1,0 +1,362 @@
+.pending-approval-page {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.pending-approval-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  background: var(--background);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.pending-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+}
+
+.pending-close-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.pending-close-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .pending-approval-container {
+    flex-direction: row;
+    gap: 0;
+  }
+}
+
+/* Sección de video (izquierda) */
+.pending-video-section {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  max-height: 500px;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .pending-video-section {
+    width: 50%;
+    min-height: 600px;
+    max-height: none;
+  }
+}
+
+.pending-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pending-mute-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.pending-mute-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.pending-mute-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .pending-mute-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+/* Sección de mensaje (derecha) */
+.pending-message-section {
+  width: 100%;
+  padding: 3rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .pending-message-section {
+    width: 50%;
+    padding: 4rem 3rem;
+  }
+}
+
+.pending-message-content {
+  width: 100%;
+  max-width: 500px;
+}
+
+.pending-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pending-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pending-avatar-text {
+  font-size: 2rem;
+}
+
+.pending-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pending-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0 0;
+}
+
+.pending-message {
+  margin-bottom: 2rem;
+}
+
+.pending-message-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.pending-message-text.highlight {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+  font-weight: 500;
+}
+
+.pending-success-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.pending-check-icon {
+  font-size: 2rem;
+}
+
+.pending-success-title {
+  font-size: 1.5rem;
+  color: white;
+  margin: 0;
+  font-weight: 700;
+}
+
+.pending-benefits-section {
+  background: var(--background-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.pending-benefits-title {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.pending-intro-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.pending-benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pending-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.pending-benefit-item:hover {
+  transform: translateX(5px);
+}
+
+.benefit-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.pending-benefit-item span:last-child {
+  flex: 1;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.pending-wait-message {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.pending-signature {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.pending-signature-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.pending-signature-text strong {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.pending-actions {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+}
+
+.pending-understood-button {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.pending-understood-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.pending-understood-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .pending-approval-page {
+    padding: 1rem;
+  }
+
+  .pending-approval-container {
+    border-radius: 16px;
+  }
+
+  .pending-video-section {
+    min-height: 250px;
+    max-height: 400px;
+  }
+
+  .pending-message-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .pending-title {
+    font-size: 1.25rem;
+  }
+
+  .pending-message-text {
+    font-size: 1rem;
+  }
+}
+

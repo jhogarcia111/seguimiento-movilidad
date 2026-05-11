@@ -17,8 +17,8 @@ export default defineConfig({
       injectRegister: 'auto',
       selfDestroying: false,
       manifest: {
-        name: 'Seguimiento Movilidad Bogotá',
-        short_name: 'Movilidad Bog',
+        name: 'Transito Tito - Seguimiento a la movilidad',
+        short_name: 'Transito Tito',
         description: 'Consulta problemas de movilidad en Bogotá en tiempo real',
         theme_color: '#1a73e8',
         background_color: '#ffffff',
@@ -72,6 +72,7 @@ export default defineConfig({
     })
   ],
   server: {
+    host: '0.0.0.0', // Permitir acceso desde la red local
     port: 4051,
     proxy: {
       '/api': {

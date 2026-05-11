@@ -52,7 +52,7 @@ if not exist "%FRONTEND_DIR%" (
     exit /b 1
 )
 
-:: Verificar que package.json existe en ambos directorios
+:: Verificar que package.json existe en backend
 if not exist "%BACKEND_DIR%\package.json" (
     echo ❌ Error: package.json no encontrado en backend
     pause
@@ -81,12 +81,15 @@ set BACKEND_PATH=%CD%\%BACKEND_DIR%
 echo @echo off
 echo chcp 65001 ^>nul
 echo cd /d "%BACKEND_PATH%"
+echo title "Seguimiento Movilidad - Backend"
+echo set TZ=America/Bogota
 echo set PORT=%BACKEND_PORT%
 echo echo.
 echo echo ========================================
 echo echo 🔧 Backend - Puerto %BACKEND_PORT%
 echo echo ========================================
 echo echo.
+echo start /b cmd /c "for /l %%%%i in (1,0,2) do @title "Seguimiento Movilidad - Backend" ^& timeout /t 2 /nobreak ^>nul"
 echo call npm.cmd run dev
 echo pause
 ) > "%BACKEND_BAT_WT%"
@@ -96,6 +99,8 @@ set FRONTEND_PATH=%CD%\%FRONTEND_DIR%
 echo @echo off
 echo chcp 65001 ^>nul
 echo cd /d "%FRONTEND_PATH%"
+echo title "Seguimiento Movilidad - Frontend"
+echo set TZ=America/Bogota
 echo set PORT=%FRONTEND_PORT%
 echo set VITE_PORT=%FRONTEND_PORT%
 echo echo.
@@ -103,14 +108,51 @@ echo echo ========================================
 echo echo 🎨 Frontend - Puerto %FRONTEND_PORT%
 echo echo ========================================
 echo echo.
+echo start /b cmd /c "for /l %%%%i in (1,0,2) do @title "Seguimiento Movilidad - Frontend" ^& timeout /t 2 /nobreak ^>nul"
 echo call npm.cmd run dev
 echo pause
 ) > "%FRONTEND_BAT_WT%"
 
-start "" wt.exe new-tab --title "Backend - Seguimiento Movilidad" cmd /k "%BACKEND_BAT_WT%" ; split-pane --title "Frontend - Seguimiento Movilidad" cmd /k "%FRONTEND_BAT_WT%"
-
-:: Esperar un poco para que los servidores inicien
-timeout /t 2 /nobreak >nul
+start "" wt.exe new-tab --title "Seguimiento Movilidad - Backend" cmd /k "%BACKEND_BAT_WT%" ; new-tab --title "Seguimiento Movilidad - Frontend" cmd /k "%FRONTEND_BAT_WT%"
+echo.
+echo 🌐 Esperando servidores...
+timeout /t 5 /nobreak >nul
+echo 🌐 Abriendo navegador...
+:: Obtener IP local (física de la red)
+set LOCAL_IP=
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4"') do (
+    set IP_LINE=%%a
+    set IP_LINE=!IP_LINE:~1!
+    :: Verificar que sea una IP privada (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+    echo !IP_LINE! | findstr /r "^192.168." >nul
+    if !errorlevel! equ 0 (
+        set LOCAL_IP=!IP_LINE!
+        goto :found_ip
+    )
+    echo !IP_LINE! | findstr /r "^10." >nul
+    if !errorlevel! equ 0 (
+        set LOCAL_IP=!IP_LINE!
+        goto :found_ip
+    )
+    echo !IP_LINE! | findstr /r "^172.1[6-9]." >nul
+    if !errorlevel! equ 0 (
+        set LOCAL_IP=!IP_LINE!
+        goto :found_ip
+    )
+    echo !IP_LINE! | findstr /r "^172.2[0-9]." >nul
+    if !errorlevel! equ 0 (
+        set LOCAL_IP=!IP_LINE!
+        goto :found_ip
+    )
+    echo !IP_LINE! | findstr /r "^172.3[0-1]." >nul
+    if !errorlevel! equ 0 (
+        set LOCAL_IP=!IP_LINE!
+        goto :found_ip
+    )
+)
+:found_ip
+if not defined LOCAL_IP set LOCAL_IP=localhost
+start "" "http://%LOCAL_IP%:%FRONTEND_PORT%"
 
 echo.
 echo ========================================

@@ -21,6 +21,19 @@ router.post('/login', async (req, res) => {
 
     const result = await authenticateUser(username, password);
 
+    // Registrar actividad de login si el login fue exitoso
+    if (result.user && result.token) {
+      try {
+        const { logActivity } = await import('../database/activities.js');
+        await logActivity(result.user.id, 'login', {
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        // No fallar el login si falla el registro de actividad
+        console.error('Error registrando actividad de login:', error);
+      }
+    }
+
     res.json({
       success: true,
       message: 'Login exitoso',
@@ -63,6 +76,39 @@ router.post('/register', async (req, res) => {
       role: 'usuario' // Solo usuarios normales pueden registrarse
     });
 
+    // Enviar email de bienvenida (registro recibido) al usuario
+    try {
+      const { sendRegistrationEmail } = await import('../services/emailService.js');
+      await sendRegistrationEmail(username, email);
+    } catch (error) {
+      // No fallar el registro si falla el email
+      console.error('Error enviando email de registro:', error);
+    }
+
+    // Crear notificación para administradores cuando se registra un nuevo usuario
+    try {
+      const { createNotification } = await import('../database/notifications.js');
+      await createNotification({
+        type: 'new_user',
+        title: 'Nuevo usuario registrado',
+        message: `El usuario "${username}" (${email}) se ha registrado y está pendiente de aprobación.`,
+        linkUrl: '/admin?tab=users',
+        userId: user.id
+      });
+    } catch (error) {
+      // No fallar el registro si falla la notificación
+      console.error('Error creando notificación de nuevo usuario:', error);
+    }
+
+    // Enviar email a todos los administradores sobre el nuevo registro
+    try {
+      const { sendNewUserNotificationToAdmins } = await import('../services/emailService.js');
+      await sendNewUserNotificationToAdmins(username, email);
+    } catch (error) {
+      // No fallar el registro si falla el email a administradores
+      console.error('Error enviando email a administradores:', error);
+    }
+
     res.status(201).json({
       success: true,
       message: 'Usuario registrado exitosamente',
@@ -99,6 +145,56 @@ router.get('/me', authenticate, async (req, res) => {
     res.status(500).json({
       error: 'Error al obtener información del usuario',
       message: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/auth/logout
+ * Registra actividad de logout
+ */
+router.post('/logout', authenticate, async (req, res) => {
+  try {
+    const { logActivity } = await import('../database/activities.js');
+    await logActivity(req.user.id, 'logout', {
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({
+      success: true,
+      message: 'Logout registrado'
+    });
+  } catch (error) {
+    // No fallar el logout si falla el registro
+    console.error('Error registrando actividad de logout:', error);
+    res.json({
+      success: true,
+      message: 'Logout registrado (con error en actividad)'
+    });
+  }
+});
+
+/**
+ * POST /api/auth/app-open
+ * Registra actividad de apertura de aplicación
+ */
+router.post('/app-open', authenticate, async (req, res) => {
+  try {
+    const { logActivity } = await import('../database/activities.js');
+    await logActivity(req.user.id, 'app_open', {
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({
+      success: true,
+      message: 'App open registrado'
+    });
+  } catch (error) {
+    // No fallar si falla el registro
+    console.error('Error registrando actividad de app_open:', error);
+    res.json({
+      success: true,
+      message: 'App open registrado (con error en actividad)'
     });
   }
 });

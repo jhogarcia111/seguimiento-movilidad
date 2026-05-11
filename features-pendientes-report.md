@@ -1,0 +1,440 @@
+# 📋 Reporte de Features Pendientes en Project Tracker
+
+**Fecha de Reporte**: 2025-11-03  
+**Proyecto**: Seguimiento Movilidad (ID: 51)  
+**Versión Actual**: 1.3.0
+
+---
+
+## 📊 Resumen Ejecutivo
+
+Este documento identifica las features que están documentadas en CHANGELOG.md y RELEASE_NOTES.md, así como funcionalidades implementadas en el código, pero que **NO están registradas** en el Project Tracker.
+
+---
+
+## 🚨 Features Pendientes por Versión
+
+### 📦 Versión 1.3.0 (2025-11-03)
+
+#### 1. Sistema de Prevención de Repetición de Videos
+
+**featureName:** Sistema de Prevención de Repetición de Videos en Hero y Modal
+
+**description:**
+PROBLEMA: El video del hero y el del modal podían ser el mismo, causando repetición visual. SOLICITUD: Implementar sistema que garantice que el video del hero y el del modal siempre sean diferentes. ACTIVIDADES REALIZADAS: 1) Lógica de selección de videos que excluye el video ya mostrado en hero, 2) Sistema de tracking de videos mostrados por sesión, 3) Selección aleatoria con exclusión de videos ya usados, 4) Garantía de variedad en cada apertura de modal. RESULTADO: Sistema funcional que previene repetición de videos entre hero y modal, mejorando la experiencia visual del usuario.
+
+**priority:** media
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T10:00:00.000Z
+
+---
+
+#### 2. Nuevos Mensajes de Bienvenida Personalizados
+
+**featureName:** 6 Nuevos Mensajes de Bienvenida Más Personales y Emocionantes
+
+**description:**
+PROBLEMA: Los mensajes de bienvenida eran genéricos y no reflejaban la personalidad de Tito. SOLICITUD: Crear 6 nuevos mensajes de bienvenida más personales, emocionantes y que reflejen la personalidad de Tito. ACTIVIDADES REALIZADAS: 1) Creación de 6 nuevos mensajes que hablan de emociones, hacer sentir especial al usuario, descubrir juntos, y ayuda mutua, 2) Mensajes que reflejan la personalidad de Tito como compañero de movilidad, 3) Sistema de selección aleatoria de mensajes, 4) Integración en modal de bienvenida. RESULTADO: 6 nuevos mensajes personalizados que mejoran la conexión emocional con el usuario y reflejan la personalidad de Tito.
+
+**priority:** baja
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T10:30:00.000Z
+
+---
+
+#### 3. Resaltado Verde Claro para Mensaje "No Hay Problemas"
+
+**featureName:** Resaltado Verde Claro con Border-Radius para Mensaje de "Camino Libre"
+
+**description:**
+PROBLEMA: El mensaje de "no hay problemas de movilidad" no tenía suficiente visibilidad visual. SOLICITUD: Agregar resaltado verde claro con border-radius de 25px para el mensaje de "no hay problemas de movilidad". ACTIVIDADES REALIZADAS: 1) Estilo CSS con background-color verde claro, 2) Border-radius de 25px aplicado, 3) Padding y margin ajustados, 4) Integración en componente de "no hay problemas". RESULTADO: Mensaje de "camino libre" ahora tiene resaltado verde claro que lo hace más visible y atractivo.
+
+**priority:** baja
+
+**category:** Frontend, UI
+
+**status:** completada
+
+**createdAt:** 2025-11-03T11:00:00.000Z
+
+---
+
+#### 4. Sistema de Notificaciones para Administradores
+
+**featureName:** Sistema de Notificaciones Tipo Facebook para Administradores
+
+**description:**
+PROBLEMA: Los administradores no recibían alertas cuando había nuevos usuarios pendientes de aprobación. SOLICITUD: Implementar sistema de notificaciones similar a Facebook con indicador de bombillito verde hasta que el administrador marque como leído. ACTIVIDADES REALIZADAS: 1) Tabla notifications en base de datos, 2) Componente Notifications.jsx con icono de campana, 3) Endpoints API /api/admin/notifications, /api/admin/notifications/count, /api/admin/notifications/:id/read, 4) Sistema de conteo de notificaciones no leídas, 5) Redirección automática al módulo correspondiente al hacer clic, 6) Indicador visual con bombillito verde para notificaciones no leídas, 7) Integración en Layout.jsx para mostrar en header. RESULTADO: Sistema de notificaciones funcional que alerta a administradores sobre nuevos usuarios pendientes de aprobación con indicadores visuales y redirección automática.
+
+**priority:** alta
+
+**category:** Backend, Frontend, Notificaciones
+
+**status:** completada
+
+**createdAt:** 2025-11-03T14:00:00.000Z
+
+---
+
+#### 5. Sistema de Emails de Bienvenida y Activación
+
+**featureName:** Sistema de Emails de Bienvenida, Activación y Notificaciones
+
+**description:**
+PROBLEMA: Los usuarios no recibían confirmación por email al registrarse o activar su cuenta. Los administradores no recibían notificaciones por email sobre nuevos usuarios. SOLICITUD: Implementar sistema de envío de emails con templates HTML para bienvenida, activación y notificaciones a administradores. ACTIVIDADES REALIZADAS: 1) Servicio emailService.js con nodemailer, 2) Configuración SMTP con soporte para ethereal.email en desarrollo, 3) Templates HTML para email de bienvenida al registrarse, 4) Templates HTML para email de activación de cuenta, 5) Templates HTML para notificación a administradores sobre nuevos usuarios, 6) Integración en rutas de registro y activación, 7) Logging y preview URLs para desarrollo. RESULTADO: Sistema de emails funcional que envía emails de bienvenida a usuarios, confirmación de activación, y notificaciones a administradores sobre nuevos registros.
+
+**priority:** alta
+
+**category:** Backend, Email
+
+**status:** completada
+
+**createdAt:** 2025-11-03T15:00:00.000Z
+
+---
+
+#### 6. Dashboard de Analytics con Gráficas y Filtros
+
+**featureName:** Dashboard de Analytics con Gráficas Chart.js y Filtros de Usuario y Tiempo
+
+**description:**
+PROBLEMA: Los administradores necesitaban visualizar métricas y estadísticas de uso de la aplicación de forma gráfica. SOLICITUD: Implementar dashboard de analytics con gráficas de barras y pie, filtros por usuario y tiempo, y visualización de actividades. ACTIVIDADES REALIZADAS: 1) Componente AnalyticsDashboard con Chart.js y react-chartjs-2, 2) Gráficas de barras para Top 10 usuarios y actividades por tipo, 3) Gráfica pie para distribución de tipos de actividad, 4) Filtro de usuario con picklist, 5) Filtros de tiempo (Diario, Semanal, Mensual, 3 Días, 7 Días, 15 Días), 6) Endpoint /api/admin/analytics con soporte para filtros, 7) Visualización de estadísticas generales (total usuarios, actividades, etc.), 8) Tabla de actividades recientes, 9) Integración en AdminDashboardPage. RESULTADO: Dashboard de analytics funcional con gráficas interactivas, filtros avanzados y visualización completa de métricas de la aplicación.
+
+**priority:** alta
+
+**category:** Backend, Frontend, Analytics
+
+**status:** completada
+
+**createdAt:** 2025-11-03T16:00:00.000Z
+
+---
+
+#### 7. Mejoras de Accesibilidad en Modales (Tamaños de Fuente y Animaciones)
+
+**featureName:** Mejoras de Accesibilidad en Modales para Usuarios Mayores de 50 Años
+
+**description:**
+PROBLEMA: Las letras en los modales eran muy pequeñas y no legibles para personas mayores de 50 años. Los botones no eran visibles y no se percibía claramente que eran clickeables. SOLICITUD: Aumentar tamaño de fuente en modales, mejorar visibilidad de botones con animaciones, y agregar background al botón de cerrar. ACTIVIDADES REALIZADAS: 1) Aumentado tamaño de fuente de 0.75rem a 1rem en móvil, 1.125rem en tablet, 1.25rem en desktop, 2) Line-height aumentado a 1.8 para mejor espaciado, 3) Animación de salto suave en botón de acción principal, 4) Sombra que aumenta con el salto para indicar interacción, 5) Background blanco semitransparente agregado al botón X de cerrar, 6) Borde sólido y sombra en botón X para mejor visibilidad, 7) Tamaño de botones aumentado (1.125rem en móvil, 1.25rem en tablet), 8) Padding aumentado en botones. RESULTADO: Modales ahora son legibles para usuarios mayores de 50 años con fuentes más grandes, botones más visibles con animaciones que indican interacción, y mejor accesibilidad general.
+
+**priority:** alta
+
+**category:** Frontend, Accesibilidad, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T17:00:00.000Z
+
+---
+
+#### 8. Pantalla de Carga con Fondo Animado
+
+**featureName:** Pantalla de Carga con Fondo Animado Similar al Login
+
+**description:**
+PROBLEMA: Durante la carga inicial de la aplicación, la pantalla quedaba en blanco y los usuarios pensaban que se había bloqueado. SOLICITUD: Agregar pantalla de carga con fondo animado degradado, mensaje de carga, y spinner para indicar que la aplicación está cargando. ACTIVIDADES REALIZADAS: 1) Componente LoadingScreen.jsx con fondo animado, 2) Fondo degradado animado similar al login con gradiente de colores, 3) Logo de Tito con emoji 🚦, 4) Spinner de carga animado, 5) Mensaje "Cargando aplicación...", 6) Animación de pulso en emoji, 7) Integración en App.jsx para mostrar durante carga inicial (1.5 segundos). RESULTADO: Pantalla de carga funcional que indica claramente que la aplicación está cargando, mejorando la experiencia del usuario y evitando confusión de bloqueo.
+
+**priority:** media
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T17:30:00.000Z
+
+---
+
+### 📦 Versión 1.2.0 (2025-11-03)
+
+**Nota:** La mayoría de features de esta versión parecen estar documentadas, pero se recomienda verificar que todas estén en el Project Tracker.
+
+---
+
+### 📦 Versión 1.1.0 (2025-11-02)
+
+**Nota:** Las features de esta versión parecen estar documentadas en el Project Tracker (features 654-663), pero se recomienda verificar que todas estén completas.
+
+---
+
+## 📝 Features Adicionales Identificadas en Código
+
+### 9. VideoContext para Gestión de Videos de Página
+
+**featureName:** VideoContext para Pausar y Reanudar Videos de Página al Abrir Modals
+
+**description:**
+PROBLEMA: Cuando se abría un modal, los videos de fondo seguían reproduciéndose causando interferencia de audio. SOLICITUD: Implementar sistema que pause automáticamente todos los videos de página cuando se abre un modal y los reanude al cerrarlo. ACTIVIDADES REALIZADAS: 1) VideoContext creado con React Context API, 2) Funciones registerPageVideo y unregisterPageVideo para registrar videos de página, 3) Funciones pauseAllPageVideos y resumeAllPageVideos para controlar reproducción, 4) Integración con TitoModal para pausar/reanudar al abrir/cerrar, 5) VideoProvider envolviendo la aplicación en App.jsx. RESULTADO: Sistema funcional que automáticamente pausa videos de fondo al abrir modals y los reanuda al cerrarlos, mejorando la experiencia de usuario.
+
+**priority:** media
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-02T15:00:00.000Z
+
+---
+
+### 10. Sistema de Registro de Actividades de Usuarios
+
+**featureName:** Sistema de Registro Automático de Actividades de Usuarios (app_open, login, logout)
+
+**description:**
+PROBLEMA: No existía un sistema para rastrear las actividades de los usuarios en la aplicación. SOLICITUD: Implementar sistema de registro automático de actividades como app_open, login, logout para análisis de uso. ACTIVIDADES REALIZADAS: 1) Tabla user_activities en base de datos con campos (id, user_id, activity_type, activity_data, created_at), 2) Función logActivity en activities.js para registrar actividades, 3) Endpoint POST /api/auth/app-open para registrar apertura de app, 4) Integración en AuthContext para registrar app_open automáticamente, 5) Registro de login en ruta /api/auth/login, 6) Registro de logout en AuthContext.logout, 7) Endpoint GET /api/admin/analytics que incluye actividades para estadísticas. RESULTADO: Sistema de registro de actividades funcional que registra automáticamente app_open, login y logout de usuarios para análisis y estadísticas.
+
+**priority:** media
+
+**category:** Backend, Analytics
+
+**status:** completada
+
+**createdAt:** 2025-11-02T16:00:00.000Z
+
+---
+
+### 11. Sistema de Aprobación de Usuarios con Estados
+
+**featureName:** Sistema de Aprobación de Usuarios con Estados (active, pending, inactive)
+
+**description:**
+PROBLEMA: Los administradores necesitaban un sistema para aprobar o rechazar usuarios nuevos antes de que pudieran acceder al sistema. SOLICITUD: Implementar sistema de aprobación con estados active, pending, inactive y endpoint para cambiar estados. ACTIVIDADES REALIZADAS: 1) Campo approval_status agregado a tabla users con valores 'active', 'pending', 'inactive', 2) Endpoint PUT /api/admin/users/:id/approve para cambiar approval_status, 3) Validación de estados permitidos, 4) Prevención de auto-desactivación, 5) Integración con envío de email de activación cuando se aprueba usuario, 6) Botones en tabla de usuarios para cambiar estado de aprobación, 7) Columna "Autorizado" renombrada de "Acciones" con botones "🟢 Autorizado" y "🔴 Por aprobar". RESULTADO: Sistema de aprobación funcional que permite a administradores controlar el acceso de usuarios con tres estados claros y envío automático de emails de activación.
+
+**priority:** alta
+
+**category:** Backend, Frontend, Administración
+
+**status:** completada
+
+**createdAt:** 2025-11-03T12:00:00.000Z
+
+---
+
+### 12. Edición y Eliminación de Usuarios en Panel de Administración
+
+**featureName:** Funcionalidad de Edición y Eliminación de Usuarios en Panel de Administración
+
+**description:**
+PROBLEMA: Los administradores no podían editar información de usuarios (username, email) ni eliminarlos del sistema. SOLICITUD: Implementar funcionalidad de edición inline de usuarios y eliminación (desactivación) de usuarios. ACTIVIDADES REALIZADAS: 1) Sistema de edición inline en tabla de usuarios con inputs editables, 2) Endpoint PUT /api/admin/users/:id para actualizar username y email, 3) Botones de guardar y cancelar durante edición, 4) Endpoint DELETE /api/admin/users/:id para desactivar usuarios (no eliminar físicamente), 5) Botones icon-only (✏️ Editar, 🗑️ Eliminar) para ahorrar espacio, 6) Confirmación antes de eliminar usuario, 7) Validación de datos antes de guardar edición. RESULTADO: Sistema funcional de edición y eliminación de usuarios que permite a administradores gestionar completamente la información de usuarios.
+
+**priority:** media
+
+**category:** Backend, Frontend, Administración
+
+**status:** completada
+
+**createdAt:** 2025-11-03T13:00:00.000Z
+
+---
+
+### 13. Cambio de Nombre del Proyecto a "Transito Tito"
+
+**featureName:** Cambio de Nombre del Proyecto y Rebranding a "Transito Tito"
+
+**description:**
+PROBLEMA: El nombre del proyecto "Seguimiento Movilidad" no reflejaba la identidad de la mascota Tito. SOLICITUD: Cambiar nombre del proyecto a "Transito Tito" con subtítulo "Seguimiento a la movilidad" y actualizar en toda la aplicación. ACTIVIDADES REALIZADAS: 1) Título principal cambiado a "Transito Tito" en header, 2) Subtítulo "Seguimiento a la movilidad" agregado horizontalmente en header, 3) Header más compacto con subtítulo horizontal, 4) Hero section actualizado con título "🚦 Seguimiento de Movilidad en Bogotá", 5) Actualización de branding en toda la aplicación. RESULTADO: Rebranding completo del proyecto a "Transito Tito" con identidad visual consistente en toda la aplicación.
+
+**priority:** baja
+
+**category:** Frontend, Branding
+
+**status:** completada
+
+**createdAt:** 2025-11-03T08:00:00.000Z
+
+---
+
+### 14. Remoción de Link "Dashboard" del Menú Principal
+
+**featureName:** Remoción de Link "Dashboard" del Menú Principal de Navegación
+
+**description:**
+PROBLEMA: El link "Dashboard" en el menú principal no tenía funcionalidad para usuarios regulares y causaba confusión. SOLICITUD: Remover el link "Dashboard" del menú principal ya que no tiene funcionalidad para usuarios regulares. ACTIVIDADES REALIZADAS: 1) Link "Dashboard" removido de Layout.jsx, 2) Navegación simplificada para usuarios regulares, 3) Dashboard solo accesible desde panel de administración para admins. RESULTADO: Menú de navegación simplificado sin link confuso de Dashboard para usuarios regulares.
+
+**priority:** baja
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T09:00:00.000Z
+
+---
+
+### 15. Gráficas de Analytics con Chart.js y Plugin Datalabels Personalizado
+
+**featureName:** Gráficas de Analytics con Chart.js y Estilos Personalizados en Datalabels
+
+**description:**
+PROBLEMA: Las gráficas de analytics necesitaban mostrar valores numéricos con estilos consistentes y visibles. SOLICITUD: Implementar gráficas con Chart.js usando plugin datalabels con estilos personalizados (fondo blanco, borde gris oscuro, border-radius 10px). ACTIVIDADES REALIZADAS: 1) Integración de chartjs-plugin-datalabels, 2) Configuración de datalabels con backgroundColor 'white', borderColor '#555', borderRadius 10, borderWidth 2, 3) Lógica condicional para labels en barras altas (texto blanco dentro de la barra cuando está cerca del máximo), 4) Labels con anchor y align dinámicos según posición, 5) Nombres de ejes agregados a todas las gráficas, 6) Estilos consistentes en todas las gráficas (pie, bar). RESULTADO: Gráficas de analytics con valores numéricos claramente visibles, estilos consistentes y adaptativos según el contexto de cada gráfica.
+
+**priority:** media
+
+**category:** Frontend, Analytics
+
+**status:** completada
+
+**createdAt:** 2025-11-03T16:30:00.000Z
+
+---
+
+### 16. Filtros de Tiempo en Dashboard de Analytics
+
+**featureName:** Filtros de Tiempo (Diario, Semanal, Mensual, 3 Días, 7 Días, 15 Días) en Dashboard
+
+**description:**
+PROBLEMA: El dashboard de analytics no permitía filtrar datos por períodos de tiempo específicos. SOLICITUD: Implementar filtros de tiempo para visualizar datos de diferentes períodos. ACTIVIDADES REALIZADAS: 1) Picklist de filtros de tiempo con opciones (Diario, Semanal, Mensual, 3 Días, 7 Días, 15 Días), 2) Función getDateRange() para calcular rangos de fechas según filtro, 3) Integración con endpoint /api/admin/analytics para filtrar por fecha, 4) Actualización automática de gráficas al cambiar filtro, 5) Estado timeFilter sincronizado con búsqueda de datos. RESULTADO: Dashboard de analytics con filtros de tiempo funcionales que permiten visualizar datos de diferentes períodos.
+
+**priority:** media
+
+**category:** Frontend, Analytics
+
+**status:** completada
+
+**createdAt:** 2025-11-03T16:45:00.000Z
+
+---
+
+### 17. Gráfica Comparativa de Actividades por Tipo (Bar Chart)
+
+**featureName:** Gráfica Comparativa de Actividades por Tipo con Ordenamiento Descendente
+
+**description:**
+PROBLEMA: Necesitaba una visualización comparativa de actividades por tipo para identificar qué tipos de actividades son más comunes. SOLICITUD: Implementar gráfica de barras comparativa de actividades por tipo, ordenada de mayor a menor. ACTIVIDADES REALIZADAS: 1) Gráfica de barras horizontal con Chart.js, 2) Ordenamiento de datos de mayor a menor antes de renderizar, 3) Layout de dos columnas: pie chart a la izquierda, count boxes y bar chart a la derecha, 4) Count boxes en fila superior, bar chart debajo, 5) Integración con datos de analytics, 6) Estilos consistentes con otras gráficas. RESULTADO: Gráfica comparativa de actividades por tipo funcional que muestra claramente qué tipos de actividades son más comunes.
+
+**priority:** media
+
+**category:** Frontend, Analytics
+
+**status:** completada
+
+**createdAt:** 2025-11-03T17:00:00.000Z
+
+---
+
+### 18. Renombramiento de Columnas y Botones en Tabla de Usuarios
+
+**featureName:** Renombramiento de Columnas "Acciones" a "Autorizado" y Mejora de Labels de Botones
+
+**description:**
+PROBLEMA: La columna "Acciones" no era clara y los botones mostraban "ON/OFF" que no era descriptivo. SOLICITUD: Renombrar columna "Acciones" a "Autorizado" y cambiar labels de botones a "🟢 Autorizado" / "🔴 Por aprobar" y "🟢 Activo" / "🔴 Inactivado". ACTIVIDADES REALIZADAS: 1) Columna "Acciones" renombrada a "Autorizado", 2) Botones de aprobación cambiados a "🟢 Autorizado" y "🔴 Por aprobar", 3) Columna "Estado" con botones cambiados a "🟢 Activo" y "🔴 Inactivado", 4) Actualización de estilos CSS para nuevos botones, 5) Mejora de accesibilidad con títulos descriptivos. RESULTADO: Tabla de usuarios con columnas y botones más descriptivos y claros para administradores.
+
+**priority:** baja
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T11:30:00.000Z
+
+---
+
+### 19. Estilos Condicionales en Filas de Tabla de Usuarios
+
+**featureName:** Estilos Condicionales en Filas de Tabla de Usuarios (Pendientes, Sin Actividades)
+
+**description:**
+PROBLEMA: No era fácil identificar visualmente usuarios pendientes de aprobación o usuarios activos sin actividades. SOLICITUD: Implementar estilos condicionales para resaltar filas de usuarios pendientes (rojo claro) y usuarios activos sin actividades (gris). ACTIVIDADES REALIZADAS: 1) Clase CSS user-row-pending con fondo rojo claro y texto rojo, 2) Clase CSS user-row-inactive con fondo gris y texto gris oscuro, 3) Lógica condicional para aplicar clases según approval_status y activity_count, 4) Precedencia de estilos (pendiente tiene prioridad sobre inactivo), 5) Integración en renderizado de tabla. RESULTADO: Tabla de usuarios con estilos condicionales que facilita identificar usuarios pendientes y usuarios sin actividades.
+
+**priority:** baja
+
+**category:** Frontend, UX
+
+**status:** completada
+
+**createdAt:** 2025-11-03T13:30:00.000Z
+
+---
+
+### 20. Botones Icon-Only para Editar y Eliminar Usuarios
+
+**featureName:** Botones Icon-Only para Editar y Eliminar Usuarios con Tamaño Reducido
+
+**description:**
+PROBLEMA: Los botones de editar y eliminar ocupaban mucho espacio horizontal en la tabla de usuarios. SOLICITUD: Convertir botones de editar y eliminar a solo iconos y reducir su tamaño para ahorrar espacio. ACTIVIDADES REALIZADAS: 1) Clase CSS icon-only agregada con padding reducido, 2) Tamaño de botones reducido a 25x25px, 3) Botones con solo emojis (✏️ Editar, 🗑️ Eliminar, ✅ Guardar, ❌ Cancelar), 4) Tooltips agregados para identificar acciones, 5) Estilos consistentes para todos los botones icon-only. RESULTADO: Tabla de usuarios más compacta con botones icon-only que ahorran espacio horizontal manteniendo funcionalidad completa.
+
+**priority:** baja
+
+**category:** Frontend, UI
+
+**status:** completada
+
+**createdAt:** 2025-11-03T14:00:00.000Z
+
+---
+
+### 21. Botón Clickeable de Conteo de Actividades con Navegación
+
+**featureName:** Botón Clickeable de Conteo de Actividades con Navegación al Dashboard Filtrado
+
+**description:**
+PROBLEMA: El conteo de actividades era solo texto y no permitía navegar al dashboard filtrado por ese usuario. SOLICITUD: Convertir conteo de actividades en botón clickeable que navegue al dashboard filtrado por ese usuario. ACTIVIDADES REALIZADAS: 1) Conteo de actividades convertido a botón clickeable, 2) Estilos CSS activity-count-clickable con fondo azul claro, borde azul, padding, 3) Hover effects con cambio de color y escala, 4) Navegación al dashboard con parámetro ?user=id en URL, 5) Integración con searchParams para filtrado automático, 6) Función onNavigateToDashboard pasada como prop. RESULTADO: Conteo de actividades ahora es un botón clickeable que navega automáticamente al dashboard filtrado por ese usuario.
+
+**priority:** media
+
+**category:** Frontend, Navegación
+
+**status:** completada
+
+**createdAt:** 2025-11-03T14:30:00.000Z
+
+---
+
+### 22. Gestión Mejorada de Usuarios con Conteo de Actividades
+
+**featureName:** Gestión Mejorada de Usuarios con Conteo de Actividades y Filtrado
+
+**description:**
+PROBLEMA: El panel de administración de usuarios necesitaba mostrar conteo de actividades y permitir navegación al dashboard filtrado. SOLICITUD: Mejorar panel de usuarios con conteo de actividades, navegación al dashboard filtrado, y mejor visualización de estados. ACTIVIDADES REALIZADAS: 1) Columna "Actividades" agregada a tabla de usuarios, 2) Conteo de actividades por usuario con LEFT JOIN en backend, 3) Botón clickeable de actividades que redirige al dashboard filtrado, 4) Estilos condicionales para filas (rojo claro para pendientes, gris para activos sin actividades), 5) Integración con searchParams para filtrado automático en dashboard. RESULTADO: Panel de usuarios mejorado con conteo de actividades, navegación inteligente al dashboard, y mejor visualización de estados de usuarios.
+
+**priority:** media
+
+**category:** Backend, Frontend, Administración
+
+**status:** completada
+
+**createdAt:** 2025-11-03T18:00:00.000Z
+
+---
+
+## ✅ Checklist de Verificación
+
+- [ ] Verificar que todas las features de v1.3.0 estén en Project Tracker (8 features)
+- [ ] Verificar que todas las features de v1.2.0 estén en Project Tracker
+- [ ] Verificar que todas las features de v1.1.0 estén completas en Project Tracker
+- [ ] Crear features faltantes en Project Tracker (22 features identificadas)
+- [ ] Validar tildes en todas las features
+- [ ] Validar formato de descripción (4 secciones obligatorias)
+- [ ] Validar que createdAt sea fecha real de trabajo (no fecha de reporte)
+
+---
+
+## 📊 Estadísticas
+
+- **Total de Features Pendientes Identificadas**: 22
+- **Features de v1.3.0 Pendientes**: 8
+- **Features de v1.2.0 Pendientes**: Verificar
+- **Features de v1.1.0 Pendientes**: Verificar
+- **Features Adicionales Identificadas**: 14
+
+---
+
+## 🎯 Próximos Pasos
+
+1. Revisar cada feature pendiente y crear en Project Tracker
+2. Validar que todas las features tengan el formato correcto (4 secciones)
+3. Validar que todas las fechas createdAt sean fechas reales de trabajo
+4. Validar tildes en todos los nombres y descripciones
+5. Usar encoding UTF-8 en todas las peticiones
+
+---
+
+**Generado automáticamente el**: 2025-11-03
+

@@ -59,26 +59,88 @@ async function geocodeWithGoogle(sector) {
  * Geocodifica usando OpenStreetMap Nominatim (gratis)
  */
 async function geocodeWithNominatim(sector) {
-  const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-    params: {
-      q: `${sector}, Bogotá, Colombia`,
-      format: 'json',
-      limit: 1
-    },
-    headers: {
-      'User-Agent': 'SeguimientoMovilidad/1.0'
+  try {
+    // Mejorar la búsqueda agregando contexto de Bogotá y Colombia
+    const searchQuery = sector.toLowerCase().includes('bogota') || sector.toLowerCase().includes('bogotá')
+      ? `${sector}, Colombia`
+      : `${sector}, Bogotá, Colombia`;
+    
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: searchQuery,
+        format: 'json',
+        limit: 5, // Obtener más resultados para poder filtrar mejor
+        countrycodes: 'co', // Limitar a Colombia
+        addressdetails: 1 // Obtener más detalles de la dirección
+      },
+      headers: {
+        'User-Agent': 'SeguimientoMovilidad/1.0'
+      }
+    });
+
+    if (response.data && response.data.length > 0) {
+      // Filtrar resultados que mencionen "Bogotá" o "Bogota" en el display_name
+      const bogotaResults = response.data.filter(result => 
+        result.display_name && (
+          result.display_name.toLowerCase().includes('bogotá') || 
+          result.display_name.toLowerCase().includes('bogota')
+        )
+      );
+      
+      // Si hay resultados específicos de Bogotá, priorizar los que NO sean intersecciones específicas
+      // (evitar "calle X con carrera Y" y preferir solo "calle X")
+      if (bogotaResults.length > 0) {
+        // Buscar resultados que NO mencionen "con" o "carrera" o "cra" (intersecciones específicas)
+        const nonIntersectionResults = bogotaResults.filter(result => {
+          const displayName = result.display_name.toLowerCase();
+          return !displayName.includes(' con ') && 
+                 !displayName.includes('carrera') && 
+                 !displayName.includes('cra ') &&
+                 !displayName.includes('carrera ');
+        });
+        
+        // Si hay resultados que no son intersecciones específicas, usar el primero
+        if (nonIntersectionResults.length > 0) {
+          const result = nonIntersectionResults[0];
+          console.log(`📍 Nominatim encontró: ${result.display_name} (sin intersección específica)`);
+          return {
+            lat: parseFloat(result.lat),
+            lng: parseFloat(result.lon)
+          };
+        }
+        
+        // Si no hay resultados sin intersección, usar el primero de Bogotá
+        const result = bogotaResults[0];
+        console.log(`📍 Nominatim encontró: ${result.display_name} (intersección específica - usando como fallback)`);
+        return {
+          lat: parseFloat(result.lat),
+          lng: parseFloat(result.lon)
+        };
+      }
+      
+      // Si no hay resultados específicos de Bogotá, verificar que las coordenadas estén en Bogotá
+      // Bogotá está aproximadamente entre lat: 4.4-4.8 y lng: -74.2 a -73.9
+      const result = response.data[0];
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+      
+      // Verificar que esté en el rango de Bogotá
+      if (lat >= 4.4 && lat <= 4.8 && lng >= -74.2 && lng <= -73.9) {
+        console.log(`📍 Nominatim encontró: ${result.display_name} (dentro de Bogotá)`);
+        return { lat, lng };
+      } else {
+        console.warn(`⚠️ Nominatim encontró resultado fuera de Bogotá: ${result.display_name} (${lat}, ${lng})`);
+        // Si está fuera de Bogotá, usar coordenadas del centro de Bogotá como fallback
+        console.log(`📍 Usando coordenadas del centro de Bogotá como fallback`);
+        return { lat: 4.6097, lng: -74.0817 };
+      }
     }
-  });
 
-  if (response.data && response.data.length > 0) {
-    const result = response.data[0];
-    return {
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon)
-    };
+    return null;
+  } catch (error) {
+    console.error('Error en geocodificación Nominatim:', error.message);
+    return null;
   }
-
-  return null;
 }
 
 /**
@@ -88,8 +150,8 @@ function findKnownLocation(sector) {
   const knownLocations = [
     {
       name: 'Avenida Boyacá',
-      aliases: ['boyaca', 'boyacá', 'av boyaca', 'avenida boyaca', 'avenida boyacá'],
-      coordinates: { lat: 4.6097, lng: -74.0817 }
+      aliases: ['boyaca', 'boyacá', 'av boyaca', 'av boyacá', 'avenida boyaca', 'avenida boyacá', 'av. boyaca', 'av. boyacá'],
+      coordinates: { lat: 4.7000, lng: -74.0900 } // Coordenadas aproximadas del centro de Avenida Boyacá (norte-sur)
     },
     {
       name: 'Calle 72',
@@ -103,8 +165,8 @@ function findKnownLocation(sector) {
     },
     {
       name: 'Autopista Norte',
-      aliases: ['autonorte', 'autopista norte', 'nqs', 'nqs con'],
-      coordinates: { lat: 4.7000, lng: -74.0500 }
+      aliases: ['autonorte', 'autopista norte', 'nqs', 'nqs con', 'autopista norte con', 'autonorte con'],
+      coordinates: { lat: 4.6800, lng: -74.0700 } // Punto representativo de Autopista Norte (cerca de intersección con Avenida Caracas, más central que Suba)
     },
     {
       name: 'Autopista Sur',
@@ -160,6 +222,16 @@ function findKnownLocation(sector) {
       name: 'Carrera 11',
       aliases: ['cra 11', 'carrera 11', 'carrera once'],
       coordinates: { lat: 4.6100, lng: -74.0750 }
+    },
+    {
+      name: 'Calle 26',
+      aliases: ['calle 26', 'calle veintiseis', 'calle veintiséis', '26'],
+      coordinates: { lat: 4.6097, lng: -74.0817 } // Centro de Bogotá, Calle 26 (aproximado)
+    },
+    {
+      name: 'Calle 80',
+      aliases: ['calle 80', 'calle ochenta', '80'],
+      coordinates: { lat: 4.6654, lng: -74.0776 } // Punto representativo de Calle 80 cerca de Avenida Caracas (más representativo que calle 80 con cra 11)
     }
   ];
 

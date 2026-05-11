@@ -7,10 +7,10 @@ async function checkDuplicates() {
 
     // Verificar duplicados por identifier
     const [duplicates] = await pool.execute(`
-      SELECT identifier, COUNT(*) as count, GROUP_CONCAT(id) as ids
+      SELECT identifier, COUNT(*)::int as count, string_agg(id::text, ',' ORDER BY id) as ids
       FROM sources
       GROUP BY identifier
-      HAVING count > 1
+      HAVING COUNT(*) > 1
     `);
 
     if (duplicates.length === 0) {
@@ -40,11 +40,11 @@ async function checkDuplicates() {
 
     // Verificar total de fuentes
     const [total] = await pool.execute('SELECT COUNT(*) as total FROM sources');
-    console.log(`\nTotal de fuentes en la base de datos: ${total[0].total}`);
+    console.log(`\nTotal de fuentes en la base de datos: ${Number(total[0].total)}`);
 
     // Contar únicas
     const [unique] = await pool.execute('SELECT COUNT(DISTINCT identifier) as unique_count FROM sources');
-    console.log(`Identifiers únicos: ${unique[0].unique_count}`);
+    console.log(`Identifiers únicos: ${Number(unique[0].unique_count)}`);
 
     process.exit(0);
   } catch (error) {

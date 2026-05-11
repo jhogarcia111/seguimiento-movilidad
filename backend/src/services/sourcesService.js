@@ -8,12 +8,11 @@ import { getDatabase } from '../database/db.js';
 export async function getSourcesByTags(tags = []) {
   try {
     const pool = getDatabase();
-    
+
     if (tags.length === 0) {
-      // Si no hay tags, retornar todas las fuentes activas
       const [sources] = await pool.execute(
         `SELECT s.*, 
-         GROUP_CONCAT(t.name) as tag_names
+         string_agg(t.name, ',' ORDER BY t.name) as tag_names
          FROM sources s
          LEFT JOIN source_tags st ON s.id = st.source_id
          LEFT JOIN tags t ON st.tag_id = t.id
@@ -21,30 +20,32 @@ export async function getSourcesByTags(tags = []) {
          GROUP BY s.id
          ORDER BY s.name`
       );
-      
-      return sources.map(source => ({
+
+      return sources.map((source) => ({
         ...source,
-        tags: source.tag_names ? source.tag_names.split(',') : []
+        tags: source.tag_names ? source.tag_names.split(',') : [],
       }));
     }
 
-    // Buscar fuentes que tengan al menos uno de los tags
+    const placeholders = tags.map(() => '?').join(', ');
     const [sources] = await pool.execute(
-      `SELECT DISTINCT s.*, 
-       GROUP_CONCAT(DISTINCT t.name) as tag_names
+      `SELECT s.*, sub.tag_names
        FROM sources s
-       INNER JOIN source_tags st ON s.id = st.source_id
-       INNER JOIN tags t ON st.tag_id = t.id
-       WHERE s.is_active = TRUE 
-         AND t.name IN (?)
-       GROUP BY s.id
+       INNER JOIN (
+         SELECT st.source_id, string_agg(t.name, ',' ORDER BY t.name) AS tag_names
+         FROM source_tags st
+         INNER JOIN tags t ON st.tag_id = t.id
+         WHERE t.name IN (${placeholders})
+         GROUP BY st.source_id
+       ) sub ON s.id = sub.source_id
+       WHERE s.is_active = TRUE
        ORDER BY s.name`,
-      [tags]
+      tags
     );
 
-    return sources.map(source => ({
+    return sources.map((source) => ({
       ...source,
-      tags: source.tag_names ? source.tag_names.split(',') : []
+      tags: source.tag_names ? source.tag_names.split(',') : [],
     }));
   } catch (error) {
     console.error('Error obteniendo fuentes por tags:', error);
@@ -63,8 +64,8 @@ export async function getTwitterSources() {
        FROM sources 
        WHERE type = 'twitter' AND is_active = TRUE`
     );
-    
-    return sources.map(s => s.identifier); // Retornar solo los identifiers
+
+    return sources.map((s) => s.identifier);
   } catch (error) {
     console.error('Error obteniendo fuentes Twitter:', error);
     return [];
@@ -82,7 +83,7 @@ export async function getWebSources() {
        FROM sources 
        WHERE type = 'web' AND is_active = TRUE`
     );
-    
+
     return sources;
   } catch (error) {
     console.error('Error obteniendo fuentes web:', error);

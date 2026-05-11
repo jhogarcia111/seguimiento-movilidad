@@ -13,7 +13,7 @@ const router = express.Router();
  */
 router.get('/sector', async (req, res) => {
   try {
-    const { sector, lat, lng } = req.query;
+    const { sector, lat, lng, source, skipCache } = req.query;
 
     if (!sector) {
       return res.status(400).json({
@@ -22,13 +22,18 @@ router.get('/sector', async (req, res) => {
       });
     }
 
-    const results = await getMobilityBySector(sector, lat, lng);
+    const skipCacheBool = skipCache === 'true' || skipCache === true;
+    const results = await getMobilityBySector(sector, lat, lng, source, skipCacheBool);
 
     res.json({
       success: true,
       sector: sector,
+      source: source || 'all',
       timestamp: new Date().toISOString(),
-      results: results
+      results: {
+        ...results,
+        isMock: results.isMock || false
+      }
     });
   } catch (error) {
     console.error('Error en /sector:', error);
@@ -55,7 +60,8 @@ router.get('/general', async (req, res) => {
       results: {
         incidents: results.incidents,
         source: results.source,
-        count: results.incidents.length
+        count: results.incidents.length,
+        isMock: results.isMock || false
       }
     });
   } catch (error) {

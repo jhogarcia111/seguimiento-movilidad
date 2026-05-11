@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import SectorInput from '../components/SectorInput';
 import IncidentList from '../components/IncidentList';
 import SearchHistory from '../components/SearchHistory';
+import LocationMap from '../components/LocationMap';
 import api from '../services/api';
 import './DashboardPage.css';
 
@@ -11,15 +12,18 @@ function DashboardPage() {
   const { user, token } = useAuth();
   const [sector, setSector] = useState('');
   const [searchQuery, setSearchQuery] = useState(null);
+  const [selectedSource, setSelectedSource] = useState('all');
+  const [useCache, setUseCache] = useState(false);
+  const [alertModal, setAlertModal] = useState({ isOpen: false, message: '', title: '' });
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['user-search', searchQuery],
+    queryKey: ['user-search', searchQuery, selectedSource, useCache],
     queryFn: async () => {
       if (!searchQuery) return null;
       
       const params = typeof searchQuery === 'object' 
-        ? { sector: searchQuery.sector, lat: searchQuery.lat, lng: searchQuery.lng }
-        : { sector: searchQuery };
+        ? { sector: searchQuery.sector, lat: searchQuery.lat, lng: searchQuery.lng, source: selectedSource, skipCache: !useCache }
+        : { sector: searchQuery, source: selectedSource, skipCache: !useCache };
       
       const response = await api.post('/api/user/search', params, {
         headers: { Authorization: `Bearer ${token}` }
@@ -31,15 +35,29 @@ function DashboardPage() {
     staleTime: 0 // Siempre buscar datos frescos
   });
 
-  const handleSearch = () => {
+  const handleSearch = (source = selectedSource, cache = useCache) => {
     if (sector.trim()) {
+      setSelectedSource(source);
+      setUseCache(cache);
       setSearchQuery(sector.trim());
     }
+  };
+  
+  const handleSourceChange = (source) => {
+    setSelectedSource(source);
+  };
+  
+  const handleCacheChange = (cache) => {
+    setUseCache(cache);
   };
 
   const handleGeolocation = async () => {
     if (!navigator.geolocation) {
-      alert('Geolocalización no está disponible');
+      setAlertModal({
+        isOpen: true,
+        title: 'Geolocalización no disponible',
+        message: 'Geolocalización no está disponible en tu navegador. Por favor, ingresa el sector manualmente.'
+      });
       return;
     }
 
@@ -54,7 +72,11 @@ function DashboardPage() {
         lng: position.coords.longitude
       });
     } catch (error) {
-      alert('Error obteniendo ubicación: ' + error.message);
+      setAlertModal({
+        isOpen: true,
+        title: 'Error obteniendo ubicación',
+        message: `Error obteniendo ubicación: ${error.message}. Por favor, intenta nuevamente o ingresa el sector manualmente.`
+      });
     }
   };
 
@@ -74,6 +96,10 @@ function DashboardPage() {
             onSearch={handleSearch}
             onGeolocation={handleGeolocation}
             loading={isLoading}
+            selectedSource={selectedSource}
+            onSourceChange={handleSourceChange}
+            useCache={useCache}
+            onCacheChange={handleCacheChange}
           />
 
           {isLoading && (
@@ -97,22 +123,42 @@ function DashboardPage() {
               <div className="results-header">
                 <h3>Resultados para: <strong>{searchQuery.sector || searchQuery}</strong></h3>
                 {data.results?.coordinates && (
-                  <p className="coordinates">
-                    📍 {data.results.coordinates.lat.toFixed(4)}, {data.results.coordinates.lng.toFixed(4)}
-                  </p>
+                  <>
+                    <p className="coordinates">
+                      📍 {data.results.coordinates.lat.toFixed(4)}, {data.results.coordinates.lng.toFixed(4)}
+                    </p>
+                    <LocationMap 
+                      coordinates={data.results.coordinates} 
+                      sector={searchQuery.sector || searchQuery}
+                      incidents={data.results.incidents || []}
+                    />
+                  </>
                 )}
               </div>
 
               {data.results?.incidents && data.results.incidents.length > 0 ? (
                 <>
-                  <div className="incident-count">
+                  <div className={`incident-count ${data.results.isMock ? 'mock-data' : ''}`}>
                     {data.results.incidents.length} incidente{data.results.incidents.length !== 1 ? 's' : ''} encontrado{data.results.incidents.length !== 1 ? 's' : ''}
+                    {data.results.isMock && (
+                      <span className="mock-badge">📋 Datos de ejemplo</span>
+                    )}
                   </div>
-                  <IncidentList incidents={data.results.incidents} />
+                  <IncidentList incidents={data.results.incidents} isMock={data.results.isMock} />
                 </>
               ) : (
-                <div className="no-results">
-                  <p>✅ No se encontraron problemas de movilidad en este sector</p>
+                <div className={`no-results ${data.results?.isMock ? 'mock-data' : ''}`}>
+                  <p>
+                    ✅ No se encontraron problemas de movilidad en este sector
+                    {data.results?.isMock && (
+                      <span className="mock-badge">📋 Datos de ejemplo</span>
+                    )}
+                  </p>
+                  {data.results?.isMock && (
+                    <p className="no-results-note">
+                      No se pudo conectar con las fuentes de datos o se alcanzó el límite de la API. Se muestran datos de ejemplo.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -123,6 +169,17 @@ function DashboardPage() {
           <SearchHistory token={token} />
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        onConfirm={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type="info"
+        confirmText="Entendido"
+        cancelText={null}
+      />
     </div>
   );
 }

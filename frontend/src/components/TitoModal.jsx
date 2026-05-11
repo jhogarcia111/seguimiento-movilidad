@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { useVideoContext } from '../contexts/VideoContext';
 import './TitoModal.css';
 
 const TitoModal = ({ 
@@ -15,6 +16,16 @@ const TitoModal = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false); // Sonido habilitado por defecto
   const [videoRef, setVideoRef] = useState(null);
+  const { onModalOpen, onModalClose } = useVideoContext();
+
+  // Notificar cuando el modal se abre/cierra para pausar/reanudar videos de página
+  useEffect(() => {
+    if (isOpen) {
+      onModalOpen(); // Pausar todos los videos de página
+    } else {
+      onModalClose(); // Reanudar todos los videos de página
+    }
+  }, [isOpen, onModalOpen, onModalClose]);
 
   // Auto-play cuando el modal se abre
   useEffect(() => {

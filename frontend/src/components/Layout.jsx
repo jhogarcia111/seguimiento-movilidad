@@ -1,34 +1,16 @@
-import { useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import TitoModal from '../components/TitoModal';
-import useTitoModal from '../hooks/useTitoModal';
+import Notifications from './Notifications';
 import './Layout.css';
 
 function Layout() {
   const location = useLocation();
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [showSearchModal, setShowSearchModal] = useState(false);
-  const { getRandomMessage, getRandomVideo, getRandomButtonText } = useTitoModal();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleSearchClick = (e) => {
-    e.preventDefault();
-    if (isAuthenticated) {
-      setShowSearchModal(true);
-    } else {
-      navigate('/login');
-    }
-  };
-
-  const handleSearchModalConfirm = () => {
-    setShowSearchModal(false);
-    navigate('/buscar');
   };
 
   return (
@@ -36,8 +18,11 @@ function Layout() {
       <header className="header">
         <div className="container">
           <Link to="/" className="logo">
-            <span className="logo-text">🚦 Seguimiento Movilidad</span>
-            <span className="version">v1.2.0</span>
+            <div className="logo-main">
+              <span className="logo-text">🚦 Transito Tito</span>
+              <span className="logo-subtitle">Seguimiento a la movilidad</span>
+            </div>
+            <span className="version">v1.3.0</span>
           </Link>
           <nav className="nav">
             <Link 
@@ -50,7 +35,6 @@ function Layout() {
               <Link 
                 to="/buscar" 
                 className={location.pathname === '/buscar' ? 'active' : ''}
-                onClick={handleSearchClick}
               >
                 Buscar Sector
               </Link>
@@ -70,19 +54,22 @@ function Layout() {
             {isAuthenticated ? (
               <>
                 {isAdmin && (
-                  <Link 
-                    to="/admin" 
-                    className={location.pathname === '/admin' ? 'active' : ''}
-                  >
-                    Admin
-                  </Link>
+                  <>
+                    <Link 
+                      to="/admin" 
+                      className={location.pathname === '/admin' ? 'active' : ''}
+                    >
+                      Admin
+                    </Link>
+                    <Link 
+                      to="/test-scraping" 
+                      className={location.pathname === '/test-scraping' ? 'active' : ''}
+                    >
+                      🧪 Test Scraping
+                    </Link>
+                    <Notifications />
+                  </>
                 )}
-                <Link 
-                  to="/dashboard" 
-                  className={location.pathname === '/dashboard' ? 'active' : ''}
-                >
-                  Dashboard
-                </Link>
                 <div className="user-menu">
                   <span className="username">{user?.username}</span>
                   <button onClick={handleLogout} className="logout-button">
@@ -111,7 +98,7 @@ function Layout() {
       </footer>
       <div className="bottom-bar">
         <div className="bottom-bar-content">
-          <span>Seguimiento Movilidad - v1.2.0 - Desarrollado por </span>
+          <span>Transito Tito - v1.3.0 - Desarrollado por </span>
           <a 
             href="https://github.com/Jhogarcia111" 
             target="_blank" 
@@ -123,19 +110,6 @@ function Layout() {
         </div>
       </div>
 
-      {/* Modal de Búsqueda cuando se hace clic en "Buscar Sector" */}
-      {isAuthenticated && (
-        <TitoModal
-          isOpen={showSearchModal}
-          onClose={() => setShowSearchModal(false)}
-          onConfirm={handleSearchModalConfirm}
-          module="searching"
-          videoPath={getRandomVideo('searching')}
-          message={getRandomMessage('searching')}
-          title="Buscando Información 🔍"
-          confirmButtonText={getRandomButtonText('searching')}
-        />
-      )}
     </div>
   );
 }

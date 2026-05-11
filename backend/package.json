@@ -1,6 +1,6 @@
 {
   "name": "seguimiento-movilidad-backend",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Backend API para seguimiento de movilidad en Bogotá",
   "main": "server.js",
   "type": "module",
@@ -9,6 +9,7 @@
     "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:db": "node scripts/test-db-connection.js",
+    "migrate:mysql-dump": "node scripts/migrate-mysql-dump-to-pg.mjs",
     "test:twitter": "node scripts/test-twitter-api.js"
   },
   "keywords": [
@@ -19,17 +20,17 @@
   "author": "Jho Garcia",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "axios": "^1.6.2",
+    "bcrypt": "^5.1.1",
+    "cheerio": "^1.0.0-rc.12",
+    "compromise": "^14.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.2",
-    "cheerio": "^1.0.0-rc.12",
-    "mysql2": "^3.6.5",
-    "compromise": "^14.11.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
     "natural": "^6.7.0",
     "node-cron": "^3.0.3",
-    "bcrypt": "^5.1.1",
-    "jsonwebtoken": "^9.0.2"
-  },
-  "devDependencies": {}
+    "puppeteer": "^24.29.1"
+  }
 }

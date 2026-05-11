@@ -70,6 +70,51 @@
   color: var(--text-secondary);
   font-size: 0.875rem;
   font-family: monospace;
+  margin-bottom: 0.75rem;
+}
+
+.location-map-container {
+  margin: 1rem 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-map-container .leaflet-container {
+  height: 300px;
+  width: 100%;
+  z-index: 0;
+  cursor: grab;
+}
+
+.location-map-container .leaflet-container:active {
+  cursor: grabbing;
+}
+
+/* Prevenir que el scroll de la página interfiera con el zoom del mapa */
+.location-map-container .leaflet-container {
+  touch-action: pan-x pan-y;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+/* Estilos para marcadores personalizados */
+.custom-search-marker,
+.custom-incident-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-search-marker div,
+.custom-incident-marker div {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.custom-search-marker div:hover,
+.custom-incident-marker div:hover {
+  transform: scale(1.15);
 }
 
 .incident-count {
@@ -79,10 +124,58 @@
   font-weight: 600;
 }
 
+/* Estilos para datos mock */
+.incident-count.mock-data {
+  background-color: #fff3cd; /* Amarillo claro para datos mock */
+  border: 2px solid #ffc107; /* Borde amarillo */
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mock-badge {
+  display: inline-block;
+  background-color: #ffc107; /* Amarillo */
+  color: #856404; /* Texto oscuro para contraste */
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
 .no-results {
   text-align: center;
   padding: 3rem 2rem;
   color: var(--text-secondary);
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+/* Estilos para datos mock en no-results */
+.no-results.mock-data {
+  background-color: #fff3cd; /* Amarillo claro para datos mock */
+  border: 2px solid #ffc107; /* Borde amarillo */
+  padding: 3rem 2rem;
+  border-radius: 12px;
+}
+
+.no-results p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.no-results-note {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  opacity: 0.8;
 }
 
 .history-section {

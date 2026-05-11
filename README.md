@@ -1,16 +1,12 @@
 # Seguimiento Movilidad
 
-**Versión**: 1.2.0  
-**Última actualización**: 3 de noviembre de 2025
-
 ## 📋 Descripción
-Un proyecto que revisa distintas cuentas de movilidad en Bogotá y responde a la pregunta sobre dónde se están presentando bloqueos o inconvenientes en la ciudad que afectan la movilidad.
+Un proyecto que revisa distintas cuentas de movilidad en Bogotá y responde a la pregunta sobre dónde se están presentando bloqueos o inconvenientes en la ciudad que afectan la movilidad
 
 ## 🎯 Información del Proyecto
 - **ID en Project Tracker**: 51
 - **Tipo**: web
 - **Estado**: Activo
-- **Versión actual**: 1.2.0
 
 ## 🌐 Puertos Asignados
 - **Backend**: http://localhost:3051
@@ -46,8 +42,6 @@ cd frontend && npm run dev
 ```
 
 ## 📚 Documentación
-- [Changelog](./CHANGELOG.md) - Historial de cambios y versiones
-- [Release Notes](./RELEASE_NOTES.md) - Notas de lanzamiento
 - [Guía de Integración con Cursor](./docs/GUIA_CURSOR_SEGUIMIENTO_MOVILIDAD.md)
 - [Guía de Debug Móvil](./docs/GUIA_DEBUG_MOVIL.md)
 - [Project Tracker](http://localhost:3000)
@@ -68,3 +62,4 @@ curl http://localhost:3000/api/project-tracker/features?projectId=51
 
 ---
 *Generado automáticamente por Project Tracker*
+
