@@ -11,6 +11,7 @@ import IncidentList from '@/components/IncidentList';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import TitoModal from '@/components/TitoModal';
+import SystemStatus from '@/components/SystemStatus';
 import useTitoModal from '@/hooks/useTitoModal';
 import { Volume2, VolumeX } from 'lucide-react';
 import '@/styles/HomePage.css';
@@ -264,25 +265,13 @@ export default function HomePage() {
       </div>
 
       <div className="info-section">
-        <h2>Fuentes de Información</h2>
-        <div className="sources">
-          <div className="source-item">
-            <strong>@SectorMovilidad</strong>
-            <span>Secretaría Distrital de Movilidad</span>
-          </div>
-          <div className="source-item">
-            <strong>@BogotaTransito</strong>
-            <span>Tránsito Bogotá</span>
-          </div>
-          <div className="source-item">
-            <strong>@TransMilenio</strong>
-            <span>TransMilenio</span>
-          </div>
-          <div className="source-item">
-            <strong>bogota.gov.co</strong>
-            <span>Actualizaciones en vivo oficiales</span>
-          </div>
-        </div>
+        <h2>Estado del Sistema</h2>
+        <p className="info-section-subtitle">
+          Aquí puedes ver qué fuentes están operativas y cuáles aún están en desarrollo
+          o pendientes de migración. Las búsquedas siempre se completan con las fuentes
+          que están operativas.
+        </p>
+        <SystemStatus />
       </div>
 
       <TitoModal

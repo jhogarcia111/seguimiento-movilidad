@@ -5,6 +5,121 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **NOTA IMPORTANTE:** A partir de la versión **2.0.0** el proyecto fue migrado a
+> **Next.js (App Router)** como monorepo unificado. Las versiones 1.x se ejecutaban
+> sobre Express (backend) + Vite/React (frontend) en dos procesos separados.
+
+## [2.1.1] - 2026-05-12
+
+### Agregado
+- Endpoint `GET /api/sources/status` que devuelve el estado runtime de cada fuente y feature del sistema (operational / configuration_required / in_development / unavailable / disabled)
+- Componente `components/SystemStatus.jsx` con badges de color que se consume desde la HomePage
+- Sección **"Estado del Sistema"** en la home (`/`) reemplazando la lista estática "Fuentes de Información". Ahora se ve en tiempo real:
+  - 🟢 **Operativas:** bogota.gov.co · Twitter API (si hay Bearer Token) · Geocoding · IA validación (si hay DeepSeek key) · Mapa Leaflet · PWA
+  - 🟡 **Requieren configuración:** Twitter API sin Bearer Token · Emails sin SMTP · IA sin DeepSeek key
+  - 🔴 **En desarrollo / no disponibles:** Waze Live Map · Twitter scraping (Nitter, bloqueado por Cloudflare) · `node-cron` en Vercel
+- Resumen visual con conteo de fuentes operativas vs. pendientes en la parte superior del panel
+
+### Cambiado
+- La home ya no muestra una lista estática `@SectorMovilidad / @BogotaTransito / @TransMilenio / bogota.gov.co`; ahora muestra el **estado real** detectado por el servidor (variables de entorno, flags, etc.)
+- Versión bumpeada a **2.1.1**
+
+### Notas para el usuario
+- Las fuentes marcadas en **rojo** o **amarillo** no afectan al funcionamiento del sistema. Las búsquedas siempre se completan con las fuentes que están en verde
+- Cuando configures variables de entorno (`TWITTER_BEARER_TOKEN`, `DEEPSEEK_API_KEY`, `SMTP_*`), las features pasarán automáticamente a verde en el panel al recargar
+- El badge de `node-cron` aparecerá en rojo cuando la app corra en Vercel hasta que se migre a Vercel Cron Jobs
+
+---
+
+## [2.1.0] - 2026-05-12
+
+### Agregado
+- `FEATURES_INVENTORY.md`: inventario completo de endpoints, páginas, servicios y matriz de compatibilidad con Vercel/Next.js
+- Documentación de los flags `BOOTSTRAP_ADMIN_USERNAMES` y del script `npm run promote-admin`
+- Script `scripts/promote-admin.mjs` para promover usuarios a administrador manualmente desde la línea de comandos
+- Promoción automática de usuarios bootstrap (`Jho` por defecto) al arranque para que existan administradores sin intervención manual
+- Extracción de fecha de publicación desde meta tags (`article:published_time`, `pubdate`, `DC.date.issued`, `<time datetime>`) en `extractNewsFromHTML` cuando no se recibe `blogpostDate`
+
+### Corregido
+- **Scraping de fechas**: los reportes de `bogota.gov.co` ahora utilizan la **fecha real del artículo** (parseada desde el listado o desde meta tags) en lugar de `new Date().toISOString()` al momento del scraping. Esto evita que noticias antiguas aparezcan como "hace 5 horas"
+- **Mapa que no renderizaba en `/buscar`**: el contenedor `.results-map-section` no tenía altura definida, provocando que el `MapContainer` de Leaflet colapsara a 0px. Se agregó `min-height` y reglas explícitas para `.location-map-container` dentro del split layout
+- `coordinates is not defined` en `lib/services/mobilityService.js`: se movieron las declaraciones (`debugInfo`, `coordinates`, `allIncidents`) al ámbito superior de `getMobilityBySector` para que sean accesibles desde el `catch` exterior
+- `useNavigate is not defined` en `UsersList` del panel admin: se eliminó la importación residual de `react-router-dom` (la navegación ya se hace por props con `useRouter` de Next)
+- Error 500 en `/api/admin/analytics/stats`: la consulta `by_user` en `lib/db/activities.js` no incluía `u.username` y `u.email` en la cláusula `GROUP BY` (PostgreSQL estricto)
+- CSS de `.api-stats-grid` malformado que rompía el build de `styles/AdminDashboardPage.css`
+- Warning de Next sobre `themeColor` en `metadata`: movido a la exportación `viewport`
+- Warning de Next sobre workspace root: agregado `outputFileTracingRoot` en `next.config.mjs`
+
+### Cambiado
+- `IncidentCard` (cards de la sección "Otros" en HomePage) refactorizada con:
+  - Altura mínima estandarizada (`260px`) para todas las tarjetas
+  - Truncado de título (80 chars) y descripción (180 chars)
+  - Botón "Leer más" y modal de detalle con contenido completo + link al original
+  - Mejor formato de fechas (relativo solo para incidentes <24h, absoluto para los más antiguos)
+- `PendingApprovalPage` rediseñada como **modal compacto** consistente con `ConfirmModal`, en lugar de pantalla completa con scrollbar
+- Versión bumpeada a **2.1.0** en `package.json`
+
+### Documentación
+- `README.md`: actualizado con instrucciones de `BOOTSTRAP_ADMIN_USERNAMES` y `npm run promote-admin`
+
+---
+
+## [2.0.0] - 2026-05-11 - Migración a Next.js (App Router)
+
+> Versión mayor que unifica frontend y backend en un único proyecto Next.js
+> desplegable como una sola aplicación en Vercel.
+
+### Agregado
+- **Monorepo Next.js**: un único `package.json` raíz con todas las dependencias del proyecto
+- **App Router** con rutas `app/(main)/*`, `app/login`, `app/pending-approval`, `app/account-activated`
+- **Route Handlers** (`app/api/**/route.js`) que reemplazan los `backend/routes/*` de Express:
+  - 5 endpoints de autenticación (`/api/auth/*`)
+  - 6 endpoints de movilidad (`/api/mobility/*`, `/api/user/search*`)
+  - 18 endpoints de administración (`/api/admin/*`)
+  - 2 utilitarios (`/api/health`, `/api/test/scrape`)
+- **Helper de Puppeteer** (`lib/puppeteer.js`) que carga `puppeteer` localmente o `puppeteer-core` + `@sparticuz/chromium` en Vercel
+- **Streaming SSE** del endpoint `/api/user/search` reimplementado con `ReadableStream` nativo de Web APIs (en lugar de `res.write` de Express)
+- **PWA** vía `@ducanh2912/next-pwa` con manifest, iconos y service worker generados automáticamente
+- **Singleton de DB** (`lib/db/db.js`) que usa `globalThis[POOL_KEY]` para sobrevivir hot-reloads de Next y compartir `pg.Pool` entre invocaciones serverless
+- **Auth helpers** (`lib/middleware/auth.js`): `requireAuth`, `requireAdmin` que devuelven `NextResponse` para usar en cualquier Route Handler
+- **`logCapture.js`** condicionado: deshabilita escritura a disco cuando `process.env.VERCEL` está presente; usa `globalThis` para preservar buffer en memoria entre HMR
+- `next.config.mjs` con `serverExternalPackages` (puppeteer, sparticuz, cheerio), `images.remotePatterns`, PWA config
+- `jsconfig.json` con alias `@/*`
+- `.env.example` unificado para front + back
+- `.eslintrc.json` con `next/core-web-vitals`
+- Migración de **todas las páginas** desde React Router a `next/link`, `useRouter`, `usePathname`, `useSearchParams`
+- Dynamic imports con `ssr: false` para componentes Leaflet (`AnimatedMap`, `LocationMap`)
+- Guardas `typeof window !== 'undefined'` para todos los accesos a `localStorage` desde Client Components
+- `MIGRATION_NEXTJS_PROGRESS.md`: documento de progreso de migración con checklist de tareas
+
+### Cambiado
+- **Backend Express eliminado**: el código de `backend/` fue archivado y los servicios migrados a `lib/services/*` y `lib/db/*`
+- **Frontend Vite eliminado**: el código de `frontend/` fue archivado y los componentes migrados a `components/*` y páginas a `app/**`
+- **CORS** ya no es necesario al estar todo en el mismo origen
+- **Variables de entorno** consolidadas: Next.js carga `.env` y `.env.local` nativamente; se eliminó `dotenv.config()` manual
+- Scripts npm:
+  - `npm run dev` -> `next dev -p 4051`
+  - `npm run build` -> `next build`
+  - `npm run start` -> `next start -p 4051`
+- Versión bumpeada a **2.0.0** (breaking change: cambio completo de stack)
+
+### Eliminado
+- `backend/server.js`, `backend/routes/*`, `backend/middleware/auth.js` (migrados)
+- `frontend/vite.config.js`, `frontend/src/main.jsx`, `frontend/index.html` (reemplazados por App Router)
+- `react-router-dom` (reemplazado por `next/navigation`)
+- `cors` (innecesario)
+- `dotenv` explícito en código (Next.js lo carga nativamente)
+- Configuración de port forwarding y detección de URLs públicas de Cursor (innecesario con monorepo)
+
+### Notas de despliegue
+- Para **Vercel** se requiere:
+  - `runtime = 'nodejs'` en handlers que usan Puppeteer o módulos nativos
+  - `maxDuration` ajustado en handlers que ejecutan scraping
+  - Variables de entorno configuradas en el dashboard (ver `FEATURES_INVENTORY.md` §6)
+- **`node-cron` NO se ejecuta en Vercel** - pendiente migrar a Vercel Cron Jobs (ver `FEATURES_INVENTORY.md` §7.1)
+
+---
+
 ## [1.3.0] - 2025-11-03
 
 ### Agregado
@@ -134,6 +249,10 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ---
 
+[2.1.1]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v1.3.0...v2.0.0
+[1.3.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/releases/tag/v1.0.0

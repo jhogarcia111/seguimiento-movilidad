@@ -1,6 +1,6 @@
 {
   "name": "seguimiento-movilidad",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "private": true,
   "description": "Transito Tito - Seguimiento a la movilidad en Bogotá (Next.js monorepo)",
   "scripts": {

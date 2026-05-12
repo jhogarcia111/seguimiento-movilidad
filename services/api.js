@@ -108,4 +108,18 @@ export async function getGeneralMobilityProblems() {
   }
 }
 
+/**
+ * Obtiene el estado runtime de cada fuente / feature del sistema.
+ * Lo usa la HomePage para mostrar badges (operativa / pendiente / en desarrollo).
+ */
+export async function getSourcesStatus() {
+  try {
+    const response = await api.get('/api/sources/status', { timeout: 10000 });
+    return response.data;
+  } catch (error) {
+    console.error('Error en getSourcesStatus:', error);
+    throw new Error('No se pudo obtener el estado de las fuentes');
+  }
+}
+
 export default api;

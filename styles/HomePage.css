@@ -219,8 +219,16 @@
 }
 
 .info-section h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
+}
+
+.info-section-subtitle {
+  margin: 0 0 1.25rem 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 720px;
 }
 
 .sources {

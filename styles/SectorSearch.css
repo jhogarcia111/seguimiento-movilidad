@@ -191,6 +191,7 @@
 
 .results-map-section {
   width: 100%;
+  min-height: 420px;
   position: sticky;
   top: 2rem;
   align-self: flex-start;
@@ -200,6 +201,7 @@
   .results-map-section {
     width: 50%;
     flex-shrink: 0;
+    min-height: 520px;
   }
 }
 
@@ -286,13 +288,22 @@
 .location-map-container {
   margin: 1rem 0;
   width: 100%;
+  min-height: 400px;
+  height: 100%;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.results-map-section .location-map-container {
+  margin: 0;
+  height: 100%;
+  min-height: 400px;
+}
+
 .location-map-container .leaflet-container {
-  height: 300px;
+  height: 100% !important;
+  min-height: 400px;
   width: 100%;
   z-index: 0;
   cursor: grab;

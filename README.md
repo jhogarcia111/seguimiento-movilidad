@@ -120,18 +120,21 @@ npm run start
 
 ## 📚 Documentación adicional
 
+- [**Inventario de funciones + matriz Vercel/Next.js**](./FEATURES_INVENTORY.md) — endpoints, páginas, servicios y compatibilidad con cada plan de Vercel
+- [**Changelog (Semantic Versioning)**](./CHANGELOG.md) — historial completo de cambios por versión
+- [Plan de migración a Next.js (progreso)](./MIGRATION_NEXTJS_PROGRESS.md)
 - [Guía de Integración con Cursor](./docs/GUIA_CURSOR_SEGUIMIENTO_MOVILIDAD.md)
 - [Guía de Debug Móvil](./docs/GUIA_DEBUG_MOVIL.md)
-- [Plan de migración a Next.js (progreso)](./MIGRATION_NEXTJS_PROGRESS.md)
-- [Changelog](./CHANGELOG.md)
+- [Fuentes de datos](./docs/FUENTES_DATOS_MOVILIDAD.md)
 
 ## 🔧 Scripts
 
 ```bash
-npm run dev       # Next.js en modo desarrollo (puerto 4051)
-npm run build     # Build de producción
-npm run start     # Servir build de producción
-npm run lint      # ESLint (next/core-web-vitals)
+npm run dev               # Next.js en modo desarrollo (puerto 4051)
+npm run build             # Build de producción
+npm run start             # Servir build de producción
+npm run lint              # ESLint (next/core-web-vitals)
+npm run promote-admin     # Promueve usuarios a admin (ej: npm run promote-admin -- Jho)
 ```
 
 En Windows puedes usar los `.bat`:
