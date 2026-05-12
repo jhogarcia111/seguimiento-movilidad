@@ -54,6 +54,7 @@ Variables opcionales:
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
 - `FRONTEND_URL` (para links en emails)
 - `JWT_EXPIRES_IN` (default `7d`)
+- `BOOTSTRAP_ADMIN_USERNAMES` — lista de usuarios ya registrados que se promueven a administrador al iniciar la app; si no la defines, por defecto se intenta con `Jho`. Pon `BOOTSTRAP_ADMIN_USERNAMES=` vacío para no promover a nadie por defecto. También puedes usar `npm run promote-admin -- Jho` una sola vez.
 
 ### 3. Iniciar en desarrollo
 
