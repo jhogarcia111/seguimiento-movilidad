@@ -1,189 +1,86 @@
-# 🚀 Guía de Instalación Completa
+# 🚀 Guía de Instalación
 
-## Paso 1: Clonar/Descargar el Proyecto
+## 1. Pre-requisitos
 
-Si tienes el proyecto ya, continúa con el siguiente paso.
+- **Node.js** ≥ 18 (recomendado 20 LTS)
+- **npm** ≥ 9
+- Cuenta en [Neon](https://neon.tech) (o cualquier Postgres compatible)
+- (Opcional) Token de [Twitter API v2](https://developer.twitter.com)
+- (Opcional) Cuenta SMTP para enviar emails (Gmail, SendGrid, etc.)
 
-## Paso 2: Instalar Dependencias del Backend
+## 2. Clonar e instalar dependencias
 
 ```bash
-cd backend
+git clone <repo-url>
+cd "Seguimiento Movilidad"
 npm install
 ```
 
-**Dependencias principales:**
-- express
-- better-sqlite3
-- cheerio
-- axios
-- compromise (NLP)
-- natural (NLP)
-
-## Paso 3: Configurar Variables de Entorno - Backend
-
-Crea el archivo `backend/.env`:
+## 3. Configurar variables de entorno
 
 ```bash
-cd backend
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-Edita `backend/.env` con tus valores:
+Edita `.env.local`:
 
 ```env
-PORT=3051
-NODE_ENV=development
+# Obligatorio
+DATABASE_URL=postgresql://USER:PASS@HOST/neondb?sslmode=require
+JWT_SECRET=algun_secreto_largo_y_unico
 
-# Twitter/X API v2 (Opcional - si no lo tienes, usará mock data)
-TWITTER_BEARER_TOKEN=tu_bearer_token_aqui
+# Recomendado
+TWITTER_BEARER_TOKEN=tu_bearer_token
 
-# Google Maps API (Opcional - usa Nominatim si no lo tienes)
-GOOGLE_MAPS_API_KEY=tu_api_key_aqui
-USE_NOMINATIM=true
+# Opcional (emails)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=tu@gmail.com
+SMTP_PASS=app_password
+SMTP_FROM=noreply@transitotito.com
+FRONTEND_URL=http://localhost:4051
 
-# Base de datos (se crea automáticamente)
-DB_PATH=./data/mobility.db
-
-# Cache
-TWEET_CACHE_HOURS=4
-SCRAPE_CACHE_MINUTES=30
+# Opcional
+JWT_EXPIRES_IN=7d
 ```
 
-### Obtener Twitter Bearer Token (Opcional)
+> ⚠️ `.env.local` está en `.gitignore` — NO lo commitees.
 
-1. Ve a https://developer.twitter.com/
-2. Crea una app o usa una existente
-3. Ve a "Keys and Tokens"
-4. Genera un Bearer Token
-5. Cópialo a `TWITTER_BEARER_TOKEN` en `.env`
-
-**Nota:** Si no tienes token, la app funcionará con datos mock para desarrollo.
-
-## Paso 4: Instalar Dependencias del Frontend
+## 4. Iniciar en desarrollo
 
 ```bash
-cd frontend
-npm install
-```
-
-**Dependencias principales:**
-- react
-- react-dom
-- react-router-dom
-- @tanstack/react-query
-- axios
-- vite-plugin-pwa
-
-## Paso 5: Configurar Variables de Entorno - Frontend
-
-Crea el archivo `frontend/.env`:
-
-```bash
-cd frontend
-# El archivo .env.example ya existe, cópialo
-```
-
-Edita `frontend/.env`:
-
-```env
-VITE_API_URL=http://localhost:3051
-```
-
-## Paso 6: Iniciar el Backend
-
-En una terminal:
-
-```bash
-cd backend
 npm run dev
 ```
 
-Deberías ver:
-```
-✅ Base de datos conectada: ./data/mobility.db
-✅ Tablas de base de datos creadas
-🚀 Servidor corriendo en http://localhost:3051
-📊 Health check: http://localhost:3051/health
-```
+La app levanta en `http://localhost:4051`. En la primera petición se crean las tablas en PostgreSQL automáticamente y se inserta el usuario admin (admin / admin123).
 
-## Paso 7: Iniciar el Frontend
-
-En otra terminal:
+## 5. Build y prueba de producción
 
 ```bash
-cd frontend
-npm run dev
+npm run build
+npm run start
 ```
 
-Deberías ver:
-```
-VITE v5.x.x ready in xxx ms
-
-➜  Local:   http://localhost:4051/
-```
-
-## Paso 8: Probar la Aplicación
-
-1. Abre http://localhost:4051 en tu navegador
-2. Ve a "Buscar Sector"
-3. Prueba con: "Avenida Boyacá" o "Calle 72"
-
-## Verificación
-
-### Backend Health Check
+## 6. Deploy en Vercel
 
 ```bash
-curl http://localhost:3051/health
+npm i -g vercel
+vercel
 ```
 
-Debería responder:
-```json
-{
-  "status": "ok",
-  "timestamp": "2025-01-27T...",
-  "service": "Seguimiento Movilidad API"
-}
-```
+O bien:
 
-### Probar Endpoint de Movilidad
+1. Importa el repo desde el dashboard de Vercel.
+2. Vercel detecta Next.js automáticamente.
+3. Configura las env vars (Settings → Environment Variables).
+4. Vercel reconoce las rutas con `export const maxDuration = 60` automáticamente.
 
-```bash
-curl "http://localhost:3051/api/mobility/sector?sector=Avenida%20Boyacá"
-```
+> Para que Puppeteer funcione en serverless ya se incluyen `puppeteer-core` y `@sparticuz/chromium`. El helper `lib/puppeteer.js` cambia automáticamente entre Puppeteer local y la versión serverless usando `process.env.VERCEL`.
 
-## Troubleshooting
+## 7. Solución de problemas
 
-### Error: "Cannot find module"
-
-```bash
-# Asegúrate de instalar dependencias en ambos proyectos
-cd backend && npm install
-cd ../frontend && npm install
-```
-
-### Error: "Port already in use"
-
-```bash
-# Cambia el puerto en .env o cierra la aplicación que usa el puerto
-```
-
-### Error: "Twitter API error"
-
-- Sin problema, la app usará datos mock si no tienes token
-- Los datos mock incluyen ejemplos para "Avenida Boyacá"
-
-### Error: Base de datos
-
-- La base de datos se crea automáticamente
-- Si hay problemas, elimina `backend/data/mobility.db` y reinicia
-
-## Próximos Pasos
-
-1. ✅ Instalar dependencias (backend y frontend)
-2. ✅ Configurar `.env` files
-3. ✅ Iniciar ambos servidores
-4. ✅ Probar la aplicación
-5. 🔄 (Opcional) Configurar Twitter Bearer Token
-6. 🔄 (Opcional) Configurar Google Maps API
-
-¡Listo! La aplicación está funcionando. 🎉
+- **`DATABASE_URL debe ser una cadena postgresql://...`** → revisa que `.env.local` tenga `DATABASE_URL` correcta y reinicia `npm run dev`.
+- **PWA no se instala** → debe estar en `npm run build` + `npm run start` (en dev está deshabilitada). HTTPS o `localhost` son requeridos.
+- **Hidratación / leaflet** → `AnimatedMap` y `LocationMap` ya están envueltos con `dynamic({ ssr:false })`; si añades nuevos componentes que usen Leaflet, haz lo mismo.
+- **Twitter rate limit** → revisa `/admin → API Status` y configura `twitter_data_source = 'mock'` mientras se recupera.
+- **Emails no envían** → si `SMTP_*` está vacío, la app loguea un warning y continúa; revisa logs para detalles.

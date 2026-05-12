@@ -1,93 +1,35 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo 🚀 Iniciando Servidores de Movilidad
+echo Iniciando Transito Tito (Next.js)
 echo ========================================
 echo.
 
-:: Configuración de puertos
-set BACKEND_PORT=3051
-set FRONTEND_PORT=4051
+set APP_PORT=4051
 
-:: Rutas del proyecto
-set BACKEND_DIR=backend
-set FRONTEND_DIR=frontend
-
-echo 📍 Puertos configurados:
-echo    Backend:  %BACKEND_PORT%
-echo    Frontend: %FRONTEND_PORT%
-echo.
-
-:: Verificar que los directorios existen
-if not exist "%BACKEND_DIR%" (
-    echo ❌ Error: Directorio backend no encontrado
+if not exist "package.json" (
+    echo Error: package.json no encontrado en la raiz
     pause
     exit /b 1
 )
 
-if not exist "%FRONTEND_DIR%" (
-    echo ❌ Error: Directorio frontend no encontrado
-    pause
-    exit /b 1
-)
-
-:: Verificar que package.json existe en ambos directorios
-if not exist "%BACKEND_DIR%\package.json" (
-    echo ❌ Error: package.json no encontrado en backend
-    pause
-    exit /b 1
-)
-
-if not exist "%FRONTEND_DIR%\package.json" (
-    echo ❌ Error: package.json no encontrado en frontend
-    pause
-    exit /b 1
-)
-
-:: Verificar que node_modules existe
-if not exist "%BACKEND_DIR%\node_modules" (
-    echo ⚠️  node_modules no encontrado en backend
-    echo 📦 Instalando dependencias del backend...
-    cd %BACKEND_DIR%
+if not exist "node_modules" (
+    echo node_modules no encontrado. Instalando dependencias...
     call npm install
-    cd ..
     echo.
 )
 
-if not exist "%FRONTEND_DIR%\node_modules" (
-    echo ⚠️  node_modules no encontrado en frontend
-    echo 📦 Instalando dependencias del frontend...
-    cd %FRONTEND_DIR%
-    call npm install
-    cd ..
-    echo.
-)
-
-echo ========================================
-echo 🚀 Iniciando Servidores
-echo ========================================
-echo.
-
-:: Iniciar Backend en nueva ventana
-echo 📡 Iniciando Backend...
-start "Backend - Seguimiento Movilidad" /D "%CD%\%BACKEND_DIR%" cmd /k "echo 🚀 Backend en puerto %BACKEND_PORT% && npm run dev"
-
-:: Esperar un poco para que el backend inicie
-timeout /t 3 /nobreak >nul
-
-:: Iniciar Frontend en nueva ventana
-echo 🎨 Iniciando Frontend...
-start "Frontend - Seguimiento Movilidad" /D "%CD%\%FRONTEND_DIR%" cmd /k "echo 🚀 Frontend en puerto %FRONTEND_PORT% && npm run dev"
+echo Iniciando aplicacion Next.js en puerto %APP_PORT%...
+start "Transito Tito - Next.js" cmd /k "echo Next.js dev en puerto %APP_PORT% && npm run dev"
 
 echo.
 echo ========================================
-echo ✅ Servidores Iniciados
+echo Servidor iniciado
 echo ========================================
 echo.
-echo 📊 Backend:  http://localhost:%BACKEND_PORT%
-echo 🎨 Frontend: http://localhost:%FRONTEND_PORT%
+echo App:  http://localhost:%APP_PORT%
+echo API:  http://localhost:%APP_PORT%/api/*
 echo.
-echo 💡 Dos ventanas se abrieron con los servidores corriendo
-echo 💡 Para detener los servidores, ejecuta stop-server.bat
+echo Para detener el servidor ejecuta stop-server.bat
 echo.
 pause
