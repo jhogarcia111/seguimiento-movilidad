@@ -9,6 +9,56 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 > **Next.js (App Router)** como monorepo unificado. Las versiones 1.x se ejecutaban
 > sobre Express (backend) + Vite/React (frontend) en dos procesos separados.
 
+## [2.2.0] - 2026-05-12
+
+### Agregado
+
+#### Refresh automático en Vercel (reemplazo de node-cron)
+- Endpoint `GET /api/cron/refresh-cache` que limpia entradas expiradas y regenera la cache general de movilidad
+- Autenticación con `Authorization: Bearer ${CRON_SECRET}` (Vercel inyecta el header automáticamente en cron jobs)
+- En entorno local sin `CRON_SECRET` el endpoint queda accesible para pruebas con `curl`; en Vercel exige el secret
+- `vercel.json` configurado con cron `0 */6 * * *` (cada 6 horas) y `maxDuration` por endpoint
+
+#### Gestión de cache desde el panel admin
+- Endpoint `GET /api/admin/cache` que devuelve resumen por tabla (entradas vigentes vs expiradas)
+- Endpoint `DELETE /api/admin/cache` con soporte para:
+  - Limpiar solo expiradas (`onlyExpired: true`, default)
+  - Forzar limpieza total (`onlyExpired: false`)
+  - Apuntar a tablas específicas (`tables: ['general_mobility_cache', ...]`)
+- Nueva pestaña **"🧹 Cache"** en `/admin` con UI para inspeccionar y limpiar caches (por tabla o en bloque)
+
+#### Frescura de incidentes
+- `mobilityService` ahora **descarta automáticamente** incidentes con timestamp >7 días (configurable vía `FRESHNESS_THRESHOLDS.MAX_AGE_DAYS`)
+- Cada incidente queda **anotado** con `freshness: 'fresh' | 'recent' | 'stale' | 'expired' | 'unknown'` y `ageHours`
+- `IncidentCard` muestra un **badge** "Posiblemente desactualizado" (amarillo) si tiene >24h o "Antiguo (>7 días)" (rojo) en caso extremo (fallback que también funciona con resultados cacheados pre-v2.2.0)
+
+#### Diagnóstico de fuentes en /buscar
+- Componente `SourceStats` muestra, junto al listado de incidentes, cuántos elementos crudos devolvió cada fuente y cuántos fueron relevantes para la búsqueda (`matched / fetched`)
+- Cada fuente se acompaña de un pill de estado (operativa / en desarrollo / requiere config)
+- `getMobilityBySector` ahora retorna un objeto `sourceStats` con `{ twitter, bogota, waze }` y este se propaga por SSE y JSON
+
+#### Loading skeletons consistentes
+- Componente `IncidentSkeletonGrid` (`components/SkeletonCard.jsx`) con shimmer animation
+- Aplicado a `/buscar` (durante el streaming SSE) y `/dashboard` (al hacer la primera búsqueda)
+- Mantiene el layout estable (sin "salto" cuando llegan los resultados)
+
+### Cambiado
+- `addIncident` en `getMobilityBySector` ahora aplica filtro de antigüedad y anota `freshness` antes de empujar al stream
+- Endpoint `/api/user/search` SSE: el evento `complete` incluye ahora `sourceStats`
+- Versión bumpeada a **2.2.0** (incluye nuevas features sin breaking changes en endpoints existentes)
+
+### Variables de entorno nuevas
+- `CRON_SECRET` (opcional en local, obligatoria en Vercel para que `/api/cron/refresh-cache` funcione)
+- Ver `.env.example` actualizado
+
+### Notas para deploy en Vercel
+1. Generar un `CRON_SECRET` aleatorio: `openssl rand -hex 32`
+2. Agregarlo en Vercel → Settings → Environment Variables
+3. El cron job se registra automáticamente desde `vercel.json` al hacer deploy
+4. En Vercel Hobby los crons solo se ejecutan **una vez al día** independientemente del schedule; en Pro respetan el schedule completo
+
+---
+
 ## [2.1.1] - 2026-05-12
 
 ### Agregado
@@ -249,6 +299,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ---
 
+[2.2.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Jhogarcia111/seguimiento-movilidad/compare/v1.3.0...v2.0.0

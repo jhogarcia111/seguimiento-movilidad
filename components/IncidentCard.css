@@ -51,6 +51,36 @@
   white-space: nowrap;
 }
 
+.incident-header-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.incident-freshness {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  letter-spacing: 0.01em;
+}
+
+.incident-freshness-stale {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.incident-freshness-expired {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
 .incident-title {
   color: var(--text-primary);
   font-size: 1rem;

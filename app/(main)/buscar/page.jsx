@@ -11,6 +11,8 @@ import IncidentList from '@/components/IncidentList';
 import ErrorMessage from '@/components/ErrorMessage';
 import TitoModal from '@/components/TitoModal';
 import ConfirmModal from '@/components/ConfirmModal';
+import SourceStats from '@/components/SourceStats';
+import IncidentSkeletonGrid from '@/components/SkeletonCard';
 import useTitoModal from '@/hooks/useTitoModal';
 import { Volume2, VolumeX } from 'lucide-react';
 import '@/styles/SectorSearch.css';
@@ -531,6 +533,16 @@ function SectorSearchInner() {
               </div>
 
               {/* Cajas de incidentes debajo de ambas columnas (full width) */}
+              {isLoading && !data?.results?.incidents?.length && (
+                <div className="incidents-full-width">
+                  <IncidentSkeletonGrid count={6} />
+                </div>
+              )}
+              {data?.results?.sourceStats && !isLoading && (
+                <div className="incidents-full-width">
+                  <SourceStats stats={data.results.sourceStats} />
+                </div>
+              )}
               {data?.results?.incidents && Array.isArray(data.results.incidents) && data.results.incidents.length > 0 && (
                 <div className="incidents-full-width">
                   <div className={`incident-count ${data.results.isMock ? 'mock-data' : ''}`}>

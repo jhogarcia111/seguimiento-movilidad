@@ -79,6 +79,27 @@ function getSourceIcon(source) {
   return '📋';
 }
 
+function getFreshnessBadge(incident) {
+  // Si el backend anotó `freshness`, lo usamos. Si no, lo calculamos al vuelo
+  // desde el timestamp para mantener compatibilidad con resultados cacheados antiguos.
+  let freshness = incident.freshness;
+  if (!freshness && incident.timestamp) {
+    const ts = new Date(incident.timestamp);
+    if (!Number.isNaN(ts.getTime())) {
+      const hours = (Date.now() - ts.getTime()) / (1000 * 60 * 60);
+      if (hours > 24 * 7) freshness = 'expired';
+      else if (hours > 24) freshness = 'stale';
+    }
+  }
+  if (freshness === 'stale') {
+    return { label: 'Posiblemente desactualizado', className: 'incident-freshness-stale' };
+  }
+  if (freshness === 'expired') {
+    return { label: 'Antiguo (>7 días)', className: 'incident-freshness-expired' };
+  }
+  return null;
+}
+
 function IncidentCard({ incident, isMock = false }) {
   const [open, setOpen] = useState(false);
 
@@ -110,6 +131,7 @@ function IncidentCard({ incident, isMock = false }) {
   const absolute = formatAbsolute(incident.timestamp);
   const typeLabel = SHORT_LABELS[incident.type] || incident.type || 'Otros';
   const locationName = incident.location?.name;
+  const freshnessBadge = getFreshnessBadge(incident);
 
   const openDetail = () => setOpen(true);
   const closeDetail = (e) => {
@@ -135,11 +157,21 @@ function IncidentCard({ incident, isMock = false }) {
       >
         <header className="incident-header">
           <span className="incident-type">{typeLabel}</span>
-          {relative && (
-            <span className="incident-time" title={absolute || ''}>
-              {relative}
-            </span>
-          )}
+          <div className="incident-header-meta">
+            {freshnessBadge && (
+              <span
+                className={`incident-freshness ${freshnessBadge.className}`}
+                title={`Fecha de publicación: ${absolute || 'desconocida'}`}
+              >
+                ⚠️ {freshnessBadge.label}
+              </span>
+            )}
+            {relative && (
+              <span className="incident-time" title={absolute || ''}>
+                {relative}
+              </span>
+            )}
+          </div>
         </header>
 
         <h4 className="incident-title">{cleanTitle}</h4>

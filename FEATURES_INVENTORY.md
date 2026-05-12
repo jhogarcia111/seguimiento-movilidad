@@ -1,6 +1,6 @@
 # Inventario de Funciones - Transito Tito
 
-> Estado: v2.1.1 (post-migración Next.js)
+> Estado: v2.2.0 (post-migración Next.js + Vercel Cron + cache admin)
 > Última actualización: 2026-05-12
 >
 > Este documento mantiene el control completo de **endpoints, servicios, páginas, módulos y dependencias**
@@ -68,6 +68,7 @@
 | `/api/admin/notifications/count` | GET | igual | OK | OK |
 | `/api/admin/notifications/[id]/read` | PUT | igual | OK | OK |
 | `/api/admin/notifications/read-all` | PUT | igual | OK | OK |
+| `/api/admin/cache` | GET/DELETE | nuevo en v2.2.0 — gestión de cache | OK |
 
 ### 2.4 Health & Utilities
 
@@ -76,6 +77,7 @@
 | `/api/health` | GET | OK | OK |
 | `/api/test/scrape` | POST | OK (panel debug) | OK |
 | `/api/sources/status` | GET | OK (v2.1.1) — devuelve estado runtime de fuentes y features | OK |
+| `/api/cron/refresh-cache` | GET | OK (v2.2.0) — refresh automático de cache via Vercel Cron | OK (requiere `CRON_SECRET`) |
 
 ---
 
@@ -141,7 +143,7 @@
 | ------- | ----- | --- | ------- |
 | Puppeteer (`scrapingService` con browser real) | LIMITADO | OK | Requiere `@sparticuz/chromium` (~50 MB). Cold start +5-8 s. Aumentar `maxDuration` |
 | SSE para `/api/user/search` | 10 s max | 60 s max | Búsquedas largas (>60s) NO terminan en Hobby. **Considerar Pro o background jobs** |
-| `node-cron` | NO | NO | **Reemplazar por Vercel Cron Jobs** (definir en `vercel.json`) |
+| `node-cron` | RESUELTO | RESUELTO | **v2.2.0:** reemplazado por Vercel Cron Jobs definidos en `vercel.json` que invocan `/api/cron/refresh-cache` |
 | Lectura/escritura de archivos (`logCapture` a `logs/`) | NO | NO | Filesystem es read-only excepto `/tmp`. **Ya condicionado con `!process.env.VERCEL`** |
 | Twitter API v2 | OK | OK | Plan Free de Twitter da 100 posts/mes (limitante) |
 
@@ -168,6 +170,7 @@
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | NO | Envío de emails (sin: ethereal en dev) |
 | `FRONTEND_URL` | NO | URL pública para links en emails |
 | `BOOTSTRAP_ADMIN_USERNAMES` | NO | Promueve usuarios a admin al arranque (default: `Jho`) |
+| `CRON_SECRET` | SI en Vercel | Autentica el cron `/api/cron/refresh-cache`. En local opcional |
 | `NEXT_PUBLIC_*` | NO | Cualquier variable expuesta al cliente |
 
 ---
@@ -176,16 +179,20 @@
 
 ### 7.1 Funcionales (alta prioridad)
 
-- [ ] Migrar `node-cron` a Vercel Cron (`vercel.json` + endpoint `/api/cron/refresh-cache`)
-- [ ] Mejorar scraping de bogota.gov.co: extraer fecha de publicación del **artículo** (meta tags / `<time>`) - hecho v2.1.0
-- [ ] Invalidar/limpiar `general_mobility_cache` antiguo desde el panel admin
-- [ ] Revisar `wazeService` (selectores actualizados o eliminar fuente)
+- [x] **v2.2.0** — Migrar `node-cron` a Vercel Cron (`vercel.json` + `/api/cron/refresh-cache`)
+- [x] **v2.1.0** — Mejorar scraping de bogota.gov.co: extraer fecha de publicación del **artículo** (meta tags / `<time>`)
+- [x] **v2.2.0** — Invalidar/limpiar `general_mobility_cache` antiguo desde el panel admin
+- [ ] Revisar `wazeService`: actualizar selectores o eliminar la fuente del UI (actualmente queda como "en desarrollo" en el panel)
+- [ ] Filtro por **localidad/zona** en HomePage para datos generales (filtros UI sobre cache)
+- [ ] Notificaciones push de nuevas alertas para usuarios suscritos a una zona
 
 ### 7.2 Calidad / UX (media prioridad)
 
-- [ ] Loading skeleton consistente entre `/buscar` y `/dashboard`
-- [ ] Indicador de "datos antiguos" cuando el incidente tiene >24h
+- [x] **v2.2.0** — Loading skeleton consistente entre `/buscar` y `/dashboard`
+- [x] **v2.2.0** — Indicador de "datos antiguos" cuando el incidente tiene >24h (badge amarillo) y descarte automático a >7 días
+- [x] **v2.2.0** — Diagnóstico de fuentes en `/buscar` (cuántos hits dio cada fuente)
 - [ ] Validar accesibilidad WCAG en modales y formularios
+- [ ] Modo oscuro (CSS variables ya están preparadas)
 
 ### 7.3 Infraestructura (baja prioridad)
 

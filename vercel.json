@@ -1,0 +1,29 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/refresh-cache",
+      "schedule": "0 */6 * * *"
+    }
+  ],
+  "functions": {
+    "app/api/user/search/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/mobility/general/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/mobility/sector/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/mobility/refresh/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/cron/refresh-cache/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/test/scrape/route.js": {
+      "maxDuration": 60
+    }
+  }
+}

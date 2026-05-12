@@ -212,6 +212,12 @@ function AdminDashboardPageInner() {
         >
           ⚙️ Configuración
         </button>
+        <button
+          className={activeTab === 'cache' ? 'active' : ''}
+          onClick={() => setActiveTab('cache')}
+        >
+          🧹 Cache
+        </button>
       </div>
 
       <div className="admin-content">
@@ -389,6 +395,12 @@ function AdminDashboardPageInner() {
                 isUpdating={configMutation.isLoading}
               />
             )}
+          </div>
+        )}
+
+        {activeTab === 'cache' && (
+          <div className="cache-section">
+            <CacheManagement />
           </div>
         )}
 
@@ -2286,6 +2298,187 @@ function SystemConfig({ config, onUpdate, isUpdating }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function CacheManagement() {
+  const queryClient = useQueryClient();
+  const [feedback, setFeedback] = useState(null);
+
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['admin-cache'],
+    queryFn: async () => {
+      const response = await api.get('/api/admin/cache');
+      return response.data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: async ({ tables, onlyExpired }) => {
+      const response = await api.delete('/api/admin/cache', {
+        data: { tables, onlyExpired },
+      });
+      return response.data;
+    },
+    onSuccess: (result) => {
+      const totalDeleted = (result.cleared || []).reduce(
+        (sum, c) => sum + (c.deleted || 0),
+        0
+      );
+      const scope = result.onlyExpired ? 'expirado' : 'total';
+      setFeedback({
+        type: 'success',
+        text: `Cache limpiado (${scope}): ${totalDeleted} filas eliminadas`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['admin-cache'] });
+      queryClient.invalidateQueries({ queryKey: ['general-mobility'] });
+    },
+    onError: (error) => {
+      setFeedback({
+        type: 'error',
+        text: error.response?.data?.error || error.message || 'Error limpiando cache',
+      });
+    },
+  });
+
+  const handleClear = (tableId, onlyExpired) => {
+    setFeedback(null);
+    const tables = tableId ? [tableId] : undefined;
+    if (
+      !onlyExpired &&
+      !window.confirm(
+        '⚠️ ¿Borrar TODO el cache (incluyendo entradas vigentes)? Esto forzará a las próximas búsquedas a consultar las fuentes directamente.'
+      )
+    ) {
+      return;
+    }
+    clearMutation.mutate({ tables, onlyExpired });
+  };
+
+  const caches = data?.caches || [];
+  const totalActive = caches.reduce((sum, c) => sum + (c.active || 0), 0);
+  const totalExpired = caches.reduce((sum, c) => sum + (c.expired || 0), 0);
+
+  return (
+    <div className="cache-management">
+      <div className="cache-header">
+        <div>
+          <h2>🧹 Gestión de Cache</h2>
+          <p className="cache-description">
+            Los caches reducen llamadas a APIs externas y mejoran tiempos de respuesta.
+            Si los resultados parecen viejos o quieres forzar un refresh, puedes limpiarlos aquí.
+          </p>
+        </div>
+        <div className="cache-actions">
+          <button
+            type="button"
+            className="cache-refresh-btn"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            {isFetching ? '⏳ Cargando…' : '🔄 Recargar'}
+          </button>
+        </div>
+      </div>
+
+      {feedback && (
+        <div
+          className={`cache-feedback cache-feedback-${feedback.type}`}
+          role={feedback.type === 'error' ? 'alert' : 'status'}
+        >
+          {feedback.text}
+        </div>
+      )}
+
+      {isLoading && <p>Cargando estado de caches…</p>}
+
+      {!isLoading && caches.length > 0 && (
+        <>
+          <div className="cache-summary-pills">
+            <span className="cache-summary cache-summary-active">
+              🟢 {totalActive} entradas vigentes
+            </span>
+            <span className="cache-summary cache-summary-expired">
+              ⚪ {totalExpired} entradas expiradas
+            </span>
+          </div>
+
+          <div className="cache-table-wrapper">
+            <table className="cache-table">
+              <thead>
+                <tr>
+                  <th>Cache</th>
+                  <th>Vigentes</th>
+                  <th>Expiradas</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {caches.map((cache) => (
+                  <tr key={cache.id}>
+                    <td>
+                      <strong>{cache.label}</strong>
+                      <div className="cache-table-id">{cache.id}</div>
+                    </td>
+                    <td>{cache.error ? '—' : cache.active}</td>
+                    <td>{cache.error ? '—' : cache.expired}</td>
+                    <td>
+                      {cache.error ? (
+                        <span className="cache-error-cell">⚠️ {cache.error}</span>
+                      ) : (
+                        <div className="cache-row-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleClear(cache.id, true)}
+                            disabled={clearMutation.isPending}
+                            className="cache-btn cache-btn-secondary"
+                          >
+                            🧹 Solo expiradas
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleClear(cache.id, false)}
+                            disabled={clearMutation.isPending}
+                            className="cache-btn cache-btn-danger"
+                          >
+                            🔥 Todo
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="cache-bulk-actions">
+            <button
+              type="button"
+              onClick={() => handleClear(null, true)}
+              disabled={clearMutation.isPending}
+              className="cache-btn cache-btn-secondary"
+            >
+              🧹 Limpiar TODAS las expiradas
+            </button>
+            <button
+              type="button"
+              onClick={() => handleClear(null, false)}
+              disabled={clearMutation.isPending}
+              className="cache-btn cache-btn-danger"
+            >
+              🔥 Borrar TODOS los caches (forzar refresh)
+            </button>
+          </div>
+
+          <p className="cache-hint">
+            💡 Para refrescar la cache general automáticamente, Vercel ejecuta
+            <code>/api/cron/refresh-cache</code> según el schedule en <code>vercel.json</code>.
+          </p>
+        </>
+      )}
     </div>
   );
 }

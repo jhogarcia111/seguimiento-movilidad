@@ -115,6 +115,7 @@ export async function POST(request) {
               incidents: allIncidents,
               coordinates: finalCoordinates,
               isMock: results.isMock || false,
+              sourceStats: results.sourceStats || null,
               debug: finalDebugInfo,
             },
           });
@@ -183,6 +184,7 @@ export async function POST(request) {
         source: results.source,
         searchSource: source || 'all',
         isMock: results.isMock || false,
+        sourceStats: results.sourceStats || null,
       },
     });
   } catch (error) {

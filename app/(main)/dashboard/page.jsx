@@ -9,6 +9,7 @@ import SectorInput from '@/components/SectorInput';
 import IncidentList from '@/components/IncidentList';
 import SearchHistory from '@/components/SearchHistory';
 import ConfirmModal from '@/components/ConfirmModal';
+import IncidentSkeletonGrid from '@/components/SkeletonCard';
 import api from '@/services/api';
 import '@/styles/DashboardPage.css';
 
@@ -109,10 +110,13 @@ function DashboardPageInner() {
           />
 
           {isLoading && (
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <p>Buscando información...</p>
-            </div>
+            <>
+              <div className="loading-spinner">
+                <div className="spinner"></div>
+                <p>Buscando información...</p>
+              </div>
+              <IncidentSkeletonGrid count={4} />
+            </>
           )}
 
           {error && (
