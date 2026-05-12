@@ -777,7 +777,6 @@ function SourcesList({ sources, onEdit, onDeactivate, searchTerm = '' }) {
 
 // Componente para lista de usuarios
 function UsersList({ users, onDeactivate, onApprove, onToggleActive, onEdit, onNavigateToDashboard }) {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
   const getApprovalStatusLabel = (status) => {
