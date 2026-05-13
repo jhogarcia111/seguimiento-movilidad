@@ -74,6 +74,8 @@ function formatAbsolute(timestamp) {
 function getSourceIcon(source) {
   if (!source) return '📋';
   if (source.includes('twitter')) return '🐦';
+  if (source.includes('movilidadbogota')) return '🛣️';
+  if (source.includes('eltiempo')) return '📰';
   if (source.includes('bogota')) return '🏛️';
   if (source.includes('waze')) return '🗺️';
   return '📋';

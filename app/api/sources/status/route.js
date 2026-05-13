@@ -30,12 +30,13 @@ export async function GET() {
     {
       id: 'bogota-news',
       name: 'bogota.gov.co (blogposts)',
-      description: 'Actualizaciones oficiales de movilidad publicadas en la página de la Alcaldía',
+      description:
+        'Actualizaciones oficiales de movilidad (Alcaldía) más RSS de la Secretaría de Movilidad (SDM) y filtro de prensa local (El Tiempo Bogotá)',
       icon: '📰',
       status: 'operational',
       label: 'Operativa',
       color: 'green',
-      detail: 'Scraping con cheerio + validación con IA',
+      detail: 'Scraping con cheerio + RSS públicos (SDM, El Tiempo) + validación con IA opcional',
     },
     {
       id: 'twitter',
